@@ -16,17 +16,32 @@
   <meta name="author" content="XiDP">
   <meta name="keywords" content="">
   
-    <meta name="description" content="本文使用Intel 的32位为例子进行举例。64位本质上和32位类似，主要区别在于函数参数的调用方式，文章结尾会简要提及。 重新回顾一下栈pop和push指令 12&#x2F;&#x2F; 将0x50的压入栈push 0x50 ![[push0x50注释 1.png]] 1234&#x2F;&#x2F; 将esp指向的数据放入指定的寄存器中pop 寄存器名字比如 ：pop eax执行之后eax的值就变成了0x50 ![[pop寄存器注释">
+    <meta name="description" content="本文使用Intel 的32位为例子进行举例。64位本质上和32位类似，主要区别在于函数参数的调用方式，文章结尾会简要提及。 重新回顾一下栈pop和push指令 12&#x2F;&#x2F; 将0x50的压入栈push 0x50  1234&#x2F;&#x2F; 将esp指向的数据放入指定的寄存器中pop 寄存器名字比如 ：pop eax执行之后eax的值就变成了0x50  栈帧是什么?栈帧，也就是stack frame，其本质就是一种">
 <meta property="og:type" content="article">
 <meta property="og:title" content="菜鸟笔记之PWN入门(1.1.2)C程序调用过程与函数栈变化（32位 vs 64位）(Intel)">
 <meta property="og:url" content="http://example.com/2024/09/17/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.2)C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/index.html">
 <meta property="og:site_name" content="XiDP">
-<meta property="og:description" content="本文使用Intel 的32位为例子进行举例。64位本质上和32位类似，主要区别在于函数参数的调用方式，文章结尾会简要提及。 重新回顾一下栈pop和push指令 12&#x2F;&#x2F; 将0x50的压入栈push 0x50 ![[push0x50注释 1.png]] 1234&#x2F;&#x2F; 将esp指向的数据放入指定的寄存器中pop 寄存器名字比如 ：pop eax执行之后eax的值就变成了0x50 ![[pop寄存器注释">
+<meta property="og:description" content="本文使用Intel 的32位为例子进行举例。64位本质上和32位类似，主要区别在于函数参数的调用方式，文章结尾会简要提及。 重新回顾一下栈pop和push指令 12&#x2F;&#x2F; 将0x50的压入栈push 0x50  1234&#x2F;&#x2F; 将esp指向的数据放入指定的寄存器中pop 寄存器名字比如 ：pop eax执行之后eax的值就变成了0x50  栈帧是什么?栈帧，也就是stack frame，其本质就是一种">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.2/1.png">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.2/2.png">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.2/3.png">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.2/4.png">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.2/5.png">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.2/6.png">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.2/7.png">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.2/8.png">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.2/9.png">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.2/10.png">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.2/11.png">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.2/12.png">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.2/5.png">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.2/13.png">
 <meta property="article:published_time" content="2024-09-17T12:56:24.028Z">
-<meta property="article:modified_time" content="2024-09-17T13:07:18.516Z">
+<meta property="article:modified_time" content="2024-09-17T14:15:54.362Z">
 <meta property="article:author" content="XiDP">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/picture/pwn1.1.2/1.png">
   
   
   
@@ -230,7 +245,7 @@
         
         
         
-          15 分钟
+          14 分钟
         
       </span>
     
@@ -275,27 +290,27 @@
                 <p>本文使用Intel 的32位为例子进行举例。64位本质上和32位类似，主要区别在于函数参数的调用方式，文章结尾会简要提及。</p>
 <p>重新回顾一下栈pop和push指令</p>
 <figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs arcade"><span class="hljs-comment">// 将0x50的压入栈</span><br><span class="hljs-built_in">push</span> <span class="hljs-number">0x50</span><br></code></pre></td></tr></table></figure>
-<p>![[push0x50注释 1.png]]</p>
+<p><img src="/../picture/pwn1.1.2/1.png" srcset="/img/loading.gif" lazyload></p>
 <figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs x86asm">// 将<span class="hljs-built_in">esp</span>指向的数据放入指定的寄存器中<br><span class="hljs-keyword">pop</span> 寄存器名字<br>比如 ：<span class="hljs-keyword">pop</span> <span class="hljs-built_in">eax</span><br>执行之后<span class="hljs-built_in">eax</span>的值就变成了<span class="hljs-number">0x50</span><br></code></pre></td></tr></table></figure>
-<p>![[pop寄存器注释.png]]</p>
+<p><img src="/../picture/pwn1.1.2/2.png" srcset="/img/loading.gif" lazyload></p>
 <h3 id="栈帧是什么"><a href="#栈帧是什么" class="headerlink" title="栈帧是什么?"></a>栈帧是什么?</h3><p><code>栈帧</code>，也就是stack frame，<code>其本质就是一种栈，只是这种栈专门用于保存函数调用过程中的各种信息（参数，返回地址，本地变量等）。栈帧有栈顶和栈底之分，其中栈顶的地址最低，栈底的地址最高，SP(栈指针)就是一直指向栈顶的。在x86-32bit中，我们用 ebp 指向栈底，也就是基址指针；用 esp 指向栈顶</code>，也就是栈指针。下面是一个栈帧的示意图：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 这是一段有问题的C语言代码，仅仅只是用作C语言函数调用流程的介绍，为了方便读者理解</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><br><span class="hljs-type">void</span> <span class="hljs-title function_">func</span><span class="hljs-params">(参数<span class="hljs-number">1</span>, 参数<span class="hljs-number">2</span> ,参数<span class="hljs-number">3</span> )</span> &#123;<br>	<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    func(参数<span class="hljs-number">1</span>, 参数<span class="hljs-number">2</span> ,参数<span class="hljs-number">3</span> ) ;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>![[函数调用顺序注释.png]]<br>我们来详细分析一下上面的这个图和那一小段代码</p>
+<p><img src="/../picture/pwn1.1.2/3.png" srcset="/img/loading.gif" lazyload><br>我们来详细分析一下上面的这个图和那一小段代码</p>
 <p>1.其实<code>main函数</code>只是我们作为程序员认为的程序的入口，实际上在<code>main函数</code>之前编译器还会添加很多函数比如<code>start函数</code>等等，所以<code>main函数</code>的栈帧之前还是有<code>栈帧</code>的</p>
-<p>2.最开始进入到main函数中，还没有执行<code>func(参数1, 参数2 ,参数3 ) ;</code>这条代码的时候<br>![[参数调用1.png]]</p>
-<p>3.<code>func(参数1, 参数2 ,参数3 ) ;</code> 这一条语句在汇编语言中会被翻译成为<code>call func</code><br>而在执行<code>call func</code>之前程序会执行一些<code>push指令</code>将func函数的<code>参数1,2,3</code>分别压入栈中<br>也就是<code>push 参数3</code>  <code>push 参数2</code>  <code>push 参数1</code> 这三条指令。执行完之后那么栈的内容会变成这样:<br>![[push放入参数.png]]</p>
-<p>4.然后参数到位了就可以执行<code>call func</code>了。<br>而<code>call func</code>这个指令其实可以近似理解成<code>push eip + jmp func_addr</code>这两个指令的组合<br>如下图执行<code>call func</code>前后栈和<code>eip指针</code>的情况<br>![[call_func.png]]<br>当然图中的代码段是我自己猜测的，不够准确，因为本文的目的是介绍函数调用的过程，所以没有考虑过多只是希望尽可能简单的将整个过程讲解清楚。</p>
-<p>5.我们已经知道了执行<code>call func</code>之后的<code>栈</code>和<code>eip</code>的位置<br>然后我们介绍一下每个函数开头的初始化<code>push ebp</code>和<code>mov ebp, esp</code><br>执行 <code>push ebp</code> 之后<br>![[push_ebp之后 1.png]]<br>执行 <code>mov ebp, esp</code> 之后<br>![[mov_ebp_esp 1.png]]<br>我们可以看到执行了<code>mov ebp, esp</code>之后<code>ebp指针</code>和<code>esp指针</code>指向了同一个地址，也就是<code>ebp 旧值</code> 所在的位置</p>
-<p>6.在上一步中我们的<code>esp</code>和<code>ebp</code>处于同一个位置，然后我们需要执行<code>sub esp, 0x??</code>(这里打?是因为我不知道具体应该减去多少),这个<code>sub指令</code>在这里的作用是将<code>esp</code>向下移动，用于开出新函数所需要的栈帧，执行之后如下图:<br>![[sub_esp_0x 2.png]]</p>
-<p>7.最后我们直接来看func函数的最后一条<code>leave指令</code><br><code>leave指令</code>是<code>mov esp，ebp</code>和<code>pop ebp</code>的结合<br>我们来一条一条的看，先看 <code>mov esp, ebp</code> 执行之后的效果<br>![[mov_esp_ebp 2.png]]<br>这条指令会重新将<code>esp</code>和<code>ebp</code>移动到同一个位置<br>然后再来看 <code>pop ebp</code> 执行之后的效果<br>![[pop_ebp.png]]<br>我们发现此时<code>ebp</code>回到<code>最初在main函数中它的位置</code>，而<code>esp</code>因为<code>pop</code>会向上移动一格位置，来到了<code>eip旧地址储存的位置</code>(这是后面会提到的栈溢出的关键部分)</p>
-<p>8.紧接着我们就会执行<code>ret指令</code>，这个<code>ret指令</code>的作用相当于 <code>pop eip</code> 也就是将<code>esp</code>现在指向的值，赋值给<code>eip</code>，执行完这个语句之后，我们来看看eip在哪。如图:<br>![[ret之后.png]]<br>我们可以看到，<code>栈</code>一切都回到了<code>call func</code> 这个指令执行之前，只有<code>eip</code>的位置改变了，仿佛它从没来过…</p>
+<p>2.最开始进入到main函数中，还没有执行<code>func(参数1, 参数2 ,参数3 ) ;</code>这条代码的时候<br><img src="/../picture/pwn1.1.2/4.png" srcset="/img/loading.gif" lazyload></p>
+<p>3.<code>func(参数1, 参数2 ,参数3 ) ;</code> 这一条语句在汇编语言中会被翻译成为<code>call func</code><br>而在执行<code>call func</code>之前程序会执行一些<code>push指令</code>将func函数的<code>参数1,2,3</code>分别压入栈中<br>也就是<code>push 参数3</code>  <code>push 参数2</code>  <code>push 参数1</code> 这三条指令。执行完之后那么栈的内容会变成这样:<br><img src="/../picture/pwn1.1.2/5.png" srcset="/img/loading.gif" lazyload></p>
+<p>4.然后参数到位了就可以执行<code>call func</code>了。<br>而<code>call func</code>这个指令其实可以近似理解成<code>push eip + jmp func_addr</code>这两个指令的组合<br>如下图执行<code>call func</code>前后栈和<code>eip指针</code>的情况<br><img src="/../picture/pwn1.1.2/6.png" srcset="/img/loading.gif" lazyload><br>当然图中的代码段是我自己猜测的，不够准确，因为本文的目的是介绍函数调用的过程，所以没有考虑过多只是希望尽可能简单的将整个过程讲解清楚。</p>
+<p>5.我们已经知道了执行<code>call func</code>之后的<code>栈</code>和<code>eip</code>的位置<br>然后我们介绍一下每个函数开头的初始化<code>push ebp</code>和<code>mov ebp, esp</code><br>执行 <code>push ebp</code> 之后<br><img src="/../picture/pwn1.1.2/7.png" srcset="/img/loading.gif" lazyload><br>执行 <code>mov ebp, esp</code> 之后<br><img src="/../picture/pwn1.1.2/8.png" srcset="/img/loading.gif" lazyload><br>我们可以看到执行了<code>mov ebp, esp</code>之后<code>ebp指针</code>和<code>esp指针</code>指向了同一个地址，也就是<code>ebp 旧值</code> 所在的位置</p>
+<p>6.在上一步中我们的<code>esp</code>和<code>ebp</code>处于同一个位置，然后我们需要执行<code>sub esp, 0x??</code>(这里打?是因为我不知道具体应该减去多少),这个<code>sub指令</code>在这里的作用是将<code>esp</code>向下移动，用于开出新函数所需要的栈帧，执行之后如下图:<br><img src="/../picture/pwn1.1.2/9.png" srcset="/img/loading.gif" lazyload></p>
+<p>7.最后我们直接来看func函数的最后一条<code>leave指令</code><br><code>leave指令</code>是<code>mov esp，ebp</code>和<code>pop ebp</code>的结合<br>我们来一条一条的看，先看 <code>mov esp, ebp</code> 执行之后的效果<br><img src="/../picture/pwn1.1.2/10.png" srcset="/img/loading.gif" lazyload><br>这条指令会重新将<code>esp</code>和<code>ebp</code>移动到同一个位置<br>然后再来看 <code>pop ebp</code> 执行之后的效果<br><img src="/../picture/pwn1.1.2/11.png" srcset="/img/loading.gif" lazyload><br>我们发现此时<code>ebp</code>回到<code>最初在main函数中它的位置</code>，而<code>esp</code>因为<code>pop</code>会向上移动一格位置，来到了<code>eip旧地址储存的位置</code>(这是后面会提到的栈溢出的关键部分)</p>
+<p>8.紧接着我们就会执行<code>ret指令</code>，这个<code>ret指令</code>的作用相当于 <code>pop eip</code> 也就是将<code>esp</code>现在指向的值，赋值给<code>eip</code>，执行完这个语句之后，我们来看看eip在哪。如图:<br><img src="/../picture/pwn1.1.2/12.png" srcset="/img/loading.gif" lazyload><br>我们可以看到，<code>栈</code>一切都回到了<code>call func</code> 这个指令执行之前，只有<code>eip</code>的位置改变了，仿佛它从没来过…</p>
 <p>到此为止<code>32位程序</code>函数的调用以及栈的变化就结束了，可以得到一个结论就是<code>函数调用前后，栈内状况不变</code>。其实这非常好理解，因为在一个函数中调用另外一个函数当然不能影响原函数的运行，所以<code>栈</code>的设计做到了<code>用完就丢</code>。被调用函数结束后<code>esp</code>和<code>ebp</code>的位置都会回到<code>call</code>这个指令之前的状态，而<code>esp</code>和<code>ebp</code>之间的数据也都没有改变<br>上述结论在<code>64位</code>中同样适用，而<code>64位程序</code>和<code>32位程序</code>除了位数上不同，最大的不同就在于<code>64位程序</code>会优先将<code>被调用函数的参数</code>存放在寄存器中</p>
 <p>这是32位函数调用:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 这是一段有问题的C语言代码，仅仅只是用作C语言函数调用流程的介绍，为了方便读者理解</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><br><span class="hljs-type">void</span> <span class="hljs-title function_">func</span><span class="hljs-params">(参数<span class="hljs-number">1</span>, 参数<span class="hljs-number">2</span> ,参数<span class="hljs-number">3</span> )</span> &#123;<br>	<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    func(参数<span class="hljs-number">1</span>, 参数<span class="hljs-number">2</span> ,参数<span class="hljs-number">3</span> ) ;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>![[push放入参数.png]]</p>
+<p><img src="/../picture/pwn1.1.2/5.png" srcset="/img/loading.gif" lazyload></p>
 <p>而这是64位函数调用:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 这是一段有问题的C语言代码，仅仅只是用作C语言函数调用流程的介绍，为了方便读者理解</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><br><span class="hljs-type">void</span> <span class="hljs-title function_">func</span><span class="hljs-params">(参数<span class="hljs-number">1</span>, 参数<span class="hljs-number">2</span> ,参数<span class="hljs-number">3</span>, 参数<span class="hljs-number">4</span>, 参数<span class="hljs-number">5</span> ,参数<span class="hljs-number">6</span>, 参数<span class="hljs-number">7</span>, 参数<span class="hljs-number">8</span>)</span> &#123;<br>	<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    func(参数<span class="hljs-number">1</span>, 参数<span class="hljs-number">2</span> ,参数<span class="hljs-number">3</span>, 参数<span class="hljs-number">4</span>, 参数<span class="hljs-number">5</span> ,参数<span class="hljs-number">6</span>, 参数<span class="hljs-number">7</span>, 参数<span class="hljs-number">8</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>在64位程序中，函数的参数会依次放入<code>rdi</code> <code>rsi</code> <code>rdx</code> <code>rcx</code> <code>r8</code> <code>r9</code> 这六个寄存器中，只有把这六个寄存器塞满后，才会<code>从右到左</code>依次放入<code>栈</code>中，像上面的代码，<code>func函数</code>有<code>8个参数</code>，那么就如图所示:<br>![[AETKIQTQPOVSB5_Q7)UY(XK.png]]<br><code>注意:64位所用的是位数更多更大的RSP和RBP</code></p>
+<p>在64位程序中，函数的参数会依次放入<code>rdi</code> <code>rsi</code> <code>rdx</code> <code>rcx</code> <code>r8</code> <code>r9</code> 这六个寄存器中，只有把这六个寄存器塞满后，才会<code>从右到左</code>依次放入<code>栈</code>中，像上面的代码，<code>func函数</code>有<code>8个参数</code>，那么就如图所示:<br><img src="/../picture/pwn1.1.2/13.png" srcset="/img/loading.gif" lazyload><br><code>注意:64位所用的是位数更多更大的RSP和RBP</code></p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>其实程序本身的流程并不困难，只是初学者对汇编语言的了解较少所以难以理解，如果对于文章内容难以理解，不妨寻找一些汇编语言的教程较为系统的了解汇编语言也许会有所帮助</p>
 <p>(制作图片用的是win11自带的画图工具，里面的字体大小不知道为什么调节不了，所以出现了字体很小的情况，<code>(。・＿・。)ﾉI’m sorry~</code>)</p>
 <p>参考文献:<br><a target="_blank" rel="noopener" href="https://www.yuque.com/cyberangel/rg9gdm/gcz7x2">PWN入门（1-1-1）-C函数调用过程原理及函数栈帧分析（Intel） (yuque.com)</a><br><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000007977460">linux - C函数调用过程原理及函数栈帧分析 - 编程之道 - SegmentFault 思否</a></p>

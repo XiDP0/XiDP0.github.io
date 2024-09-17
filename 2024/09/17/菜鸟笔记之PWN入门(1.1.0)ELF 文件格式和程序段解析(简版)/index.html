@@ -23,10 +23,13 @@
 <meta property="og:site_name" content="XiDP">
 <meta property="og:description" content="ELF (Executable and Linkable Format): 是一种用于 可执行文件、目标文件 和 库 的文件格式，类似于 Windows 下的 PE 文件格式。 ELF 主要包括三种类型的文件：  可重定位文件 (relocatable): 编译器和汇编器产生的 .o 文件，由 Linker 处理。 可执行文件 (executable): Linker 对 .o 文件进行处理后输出">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.0/aaa.png">
+<meta property="og:image" content="http://example.com/picture/pwn1.1.0/ELF%E5%92%8C%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB2.png">
 <meta property="article:published_time" content="2024-09-17T12:56:24.024Z">
-<meta property="article:modified_time" content="2024-09-17T13:05:16.835Z">
+<meta property="article:modified_time" content="2024-09-17T14:09:17.270Z">
 <meta property="article:author" content="XiDP">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/picture/pwn1.1.0/aaa.png">
   
   
   
@@ -219,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          789 字
+          777 字
         
       </span>
     
@@ -286,12 +289,12 @@
 <li><strong>.bss</strong>: 用于保存未初始化的全局变量和局部变量。</li>
 <li><strong>.plt</strong>: 用于链接和跳转到对应的 <strong>.got</strong> 表。</li>
 <li><strong>.got.plt</strong>: 存储对应函数的真实地址的表。</li>
-<li>.rodata: 只读数据</li>
-<li>.init: 程序初始化和终止的代码</li>
+<li><strong>.rodata</strong>: 只读数据</li>
+<li><strong>.init</strong>: 程序初始化和终止的代码</li>
 </ol>
-<p>![[Pasted image 20240916112756.png]]</p>
+<p><img src="/../picture/pwn1.1.0/aaa.png" srcset="/img/loading.gif" lazyload></p>
 <p>ELF 文件中的段在程序执行前会被加载到内存中,然后在计算机内存中<br>一个程序可以认为由<code>bss段</code>、<code>data段</code>、<code>text段</code>三个部分组成的。<br><code>text段</code>和<code>data段</code>都存在可执行文件当中，程序执行时，系统从可执行文件中加载至内存<br>而<code>bss段</code>在可执行文件中只是一个符号用于占位，由系统根据其符号进行初始化</p>
-<p>如何加载:<br>![[ELF和程序的对应关系2.png]]</p>
+<p>如何加载:<br><img src="/../picture/pwn1.1.0/ELF%E5%92%8C%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB2.png" srcset="/img/loading.gif" lazyload></p>
 <h3 id="text-段"><a href="#text-段" class="headerlink" title=".text 段"></a><strong>.text 段</strong></h3><ul>
 <li><strong>代码段 (code segment)</strong>: 用来存放 <code>程序执行的代码</code>。</li>
 <li>这个段的大小在程序执行之前就已经确定，因为编译好的程序代码量一般是固定的。</li>
