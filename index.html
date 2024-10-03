@@ -278,15 +278,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/09/18/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.2)C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/" target="_self">
-          菜鸟笔记之PWN入门(1.1.2)C程序调用过程与函数栈变化（32位 vs 64位）(Intel)
+        <a href="/2024/09/18/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.3)Linux%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E5%92%8CELF%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4/" target="_self">
+          菜鸟笔记之PWN入门(1.1.3)Linux基础操作和ELF文件保护
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/09/18/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.2)C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/09/18/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.3)Linux%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E5%92%8CELF%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4/" target="_self">
         <div>
-          本文使用Intel 的32位为例子进行举例。64位本质上和32位类似，主要区别在于函数参数的调用方式，文章结尾会简要提及。 重新回顾一下栈pop和push指令 12// 将0x50的压入栈push 0x50  1234// 将esp指向的数据放入指定的寄存器中pop 寄存器名字比如 ：pop eax执行之后eax的值就变成了0x50  栈帧是什么?栈帧，也就是stack frame，其本质就是一种
+          这里不讨论Linux的历史及其与Windows的比较。直接介绍一些简单基础的操作。首先我们需要安装一个Linux操作系统(首先推荐Ubuntu),我们需要安装一个VM虚拟机，然后在里面搭建一个Ubuntu的虚拟机 可以直接百度搜索，这里推荐一个文章安装虚拟机（VMware）保姆级教程（附安装包）_vmware虚拟机-CSDN博客根据教程你可以成功安装Ubuntu虚拟机之后第一件事情不是配置PWN环
         </div>
       </a>
 
@@ -311,15 +311,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/09/18/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.3)Linux%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E5%92%8CELF%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4/" target="_self">
-          菜鸟笔记之PWN入门(1.1.3)Linux基础操作和ELF文件保护
+        <a href="/2024/09/18/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.2)C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/" target="_self">
+          菜鸟笔记之PWN入门(1.1.2)C程序调用过程与函数栈变化（32位 vs 64位）(Intel)
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/09/18/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.3)Linux%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E5%92%8CELF%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/09/18/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.2)C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/" target="_self">
         <div>
-          这里不讨论Linux的历史及其与Windows的比较。直接介绍一些简单基础的操作。首先我们需要安装一个Linux操作系统(首先推荐Ubuntu),我们需要安装一个VM虚拟机，然后在里面搭建一个Ubuntu的虚拟机 可以直接百度搜索，这里推荐一个文章安装虚拟机（VMware）保姆级教程（附安装包）_vmware虚拟机-CSDN博客根据教程你可以成功安装Ubuntu虚拟机之后第一件事情不是配置PWN环
+          本文使用Intel 的32位为例子进行举例。64位本质上和32位类似，主要区别在于函数参数的调用方式，文章结尾会简要提及。 重新回顾一下栈pop和push指令 12// 将0x50的压入栈push 0x50  1234// 将esp指向的数据放入指定的寄存器中pop 寄存器名字比如 ：pop eax执行之后eax的值就变成了0x50  栈帧是什么?栈帧，也就是stack frame，其本质就是一种
         </div>
       </a>
 
