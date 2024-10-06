@@ -19,7 +19,7 @@
     <meta name="description" content="本文使用Intel 的32位为例子进行举例。64位本质上和32位类似，主要区别在于函数参数的调用方式，文章结尾会简要提及。 重新回顾一下栈pop和push指令 12&#x2F;&#x2F; 将0x50的压入栈push 0x50  1234&#x2F;&#x2F; 将esp指向的数据放入指定的寄存器中pop 寄存器名字比如 ：pop eax执行之后eax的值就变成了0x50  栈帧是什么?栈帧，也就是stack frame，其本质就是一种">
 <meta property="og:type" content="article">
 <meta property="og:title" content="菜鸟笔记之PWN入门(1.1.2)C程序调用过程与函数栈变化（32位 vs 64位）(Intel)">
-<meta property="og:url" content="http://example.com/2024/09/18/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.2)C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/index.html">
+<meta property="og:url" content="http://example.com/2024/10/05/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.2)C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/index.html">
 <meta property="og:site_name" content="XiDP">
 <meta property="og:description" content="本文使用Intel 的32位为例子进行举例。64位本质上和32位类似，主要区别在于函数参数的调用方式，文章结尾会简要提及。 重新回顾一下栈pop和push指令 12&#x2F;&#x2F; 将0x50的压入栈push 0x50  1234&#x2F;&#x2F; 将esp指向的数据放入指定的寄存器中pop 寄存器名字比如 ：pop eax执行之后eax的值就变成了0x50  栈帧是什么?栈帧，也就是stack frame，其本质就是一种">
 <meta property="og:locale" content="zh_CN">
@@ -37,8 +37,8 @@
 <meta property="og:image" content="http://example.com/picture/pwn1.1.2/12.png">
 <meta property="og:image" content="http://example.com/picture/pwn1.1.2/5.png">
 <meta property="og:image" content="http://example.com/picture/pwn1.1.2/13.png">
-<meta property="article:published_time" content="2024-09-18T12:03:44.150Z">
-<meta property="article:modified_time" content="2024-09-17T14:15:54.362Z">
+<meta property="article:published_time" content="2024-10-05T12:52:34.998Z">
+<meta property="article:modified_time" content="2024-09-17T14:15:54.000Z">
 <meta property="article:author" content="XiDP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/picture/pwn1.1.2/1.png">
@@ -210,8 +210,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-09-18 20:03" pubdate>
-          2024年9月18日 晚上
+        <time datetime="2024-10-05 20:52" pubdate>
+          2024年10月5日 晚上
         </time>
       </span>
     
@@ -320,7 +320,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>菜鸟笔记之PWN入门(1.1.2)C程序调用过程与函数栈变化（32位 vs 64位）(Intel)</div>
-      <div>http://example.com/2024/09/18/菜鸟笔记之PWN入门(1.1.2)C程序调用过程与函数栈变化（32位 vs 64位）(Intel)/</div>
+      <div>http://example.com/2024/10/05/菜鸟笔记之PWN入门(1.1.2)C程序调用过程与函数栈变化（32位 vs 64位）(Intel)/</div>
     </div>
     <div class="license-meta">
       
@@ -332,7 +332,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年9月18日</div>
+          <div>2024年10月5日</div>
         </div>
       
       
@@ -364,18 +364,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/09/18/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.3)Linux%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E5%92%8CELF%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4/" title="菜鸟笔记之PWN入门(1.1.3)Linux基础操作和ELF文件保护">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">菜鸟笔记之PWN入门(1.1.3)Linux基础操作和ELF文件保护</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/09/18/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.1)%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%A0%86%E6%A0%88%E5%85%A5%E9%97%A8/" title="菜鸟笔记之PWN入门(1.1.1)汇编语言基础与堆栈入门">
-                        <span class="hidden-mobile">菜鸟笔记之PWN入门(1.1.1)汇编语言基础与堆栈入门</span>
+                      <a href="/2024/10/05/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8Bpwn%E5%B7%A5%E5%85%B7%E7%AF%87--Pwndbg%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/" title="菜鸟笔记之pwn工具篇--Pwndbg基础使用">
+                        <span class="hidden-mobile">菜鸟笔记之pwn工具篇--Pwndbg基础使用</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

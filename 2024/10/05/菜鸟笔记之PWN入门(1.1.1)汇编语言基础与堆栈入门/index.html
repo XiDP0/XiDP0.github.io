@@ -19,14 +19,14 @@
     <meta name="description" content="啥是汇编语言?有啥用?深入了解计算机底层，我们会发现，计算机实际上只能执行一些非常基础的操作，但其速度却非常快。计算机的CPU只能执行机器码，即由一系列0和1组成的指令。不同的0和1组合会触发计算机中的不同电路，从而进行各种操作。由于这些0和1的组合很长，阅读起来不方便，因此通常以16进制形式显示。然而，即便如此，16进制的表示仍然难以理解。为了简化这一过程，汇编语言应运而生，它用更易读的符号来表">
 <meta property="og:type" content="article">
 <meta property="og:title" content="菜鸟笔记之PWN入门(1.1.1)汇编语言基础与堆栈入门">
-<meta property="og:url" content="http://example.com/2024/09/18/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.1)%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%A0%86%E6%A0%88%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:url" content="http://example.com/2024/10/05/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.1)%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%A0%86%E6%A0%88%E5%85%A5%E9%97%A8/index.html">
 <meta property="og:site_name" content="XiDP">
 <meta property="og:description" content="啥是汇编语言?有啥用?深入了解计算机底层，我们会发现，计算机实际上只能执行一些非常基础的操作，但其速度却非常快。计算机的CPU只能执行机器码，即由一系列0和1组成的指令。不同的0和1组合会触发计算机中的不同电路，从而进行各种操作。由于这些0和1的组合很长，阅读起来不方便，因此通常以16进制形式显示。然而，即便如此，16进制的表示仍然难以理解。为了简化这一过程，汇编语言应运而生，它用更易读的符号来表">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/picture/pwn1.1.1/2.png">
 <meta property="og:image" content="http://example.com/picture/pwn1.1.1/1.png">
-<meta property="article:published_time" content="2024-09-18T12:03:44.149Z">
-<meta property="article:modified_time" content="2024-09-17T14:21:05.593Z">
+<meta property="article:published_time" content="2024-10-05T12:52:34.997Z">
+<meta property="article:modified_time" content="2024-09-17T14:21:05.000Z">
 <meta property="article:author" content="XiDP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/picture/pwn1.1.1/2.png">
@@ -198,8 +198,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-09-18 20:03" pubdate>
-          2024年9月18日 晚上
+        <time datetime="2024-10-05 20:52" pubdate>
+          2024年10月5日 晚上
         </time>
       </span>
     
@@ -402,7 +402,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>菜鸟笔记之PWN入门(1.1.1)汇编语言基础与堆栈入门</div>
-      <div>http://example.com/2024/09/18/菜鸟笔记之PWN入门(1.1.1)汇编语言基础与堆栈入门/</div>
+      <div>http://example.com/2024/10/05/菜鸟笔记之PWN入门(1.1.1)汇编语言基础与堆栈入门/</div>
     </div>
     <div class="license-meta">
       
@@ -414,7 +414,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年9月18日</div>
+          <div>2024年10月5日</div>
         </div>
       
       
@@ -446,9 +446,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/09/18/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.2)C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/" title="菜鸟笔记之PWN入门(1.1.2)C程序调用过程与函数栈变化（32位 vs 64位）(Intel)">
+                      <a href="/2024/10/05/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.0.0)%E5%89%8D%E8%A8%80/" title="菜鸟笔记之PWN入门(1.0.0)前言">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">菜鸟笔记之PWN入门(1.1.2)C程序调用过程与函数栈变化（32位 vs 64位）(Intel)</span>
+                        <span class="hidden-mobile">菜鸟笔记之PWN入门(1.0.0)前言</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -456,7 +456,7 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/09/18/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.0)ELF%20%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8C%E7%A8%8B%E5%BA%8F%E6%AE%B5%E8%A7%A3%E6%9E%90(%E7%AE%80%E7%89%88)/" title="菜鸟笔记之PWN入门(1.1.0)ELF 文件格式和程序段解析(简版)">
+                      <a href="/2024/10/05/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8BPWN%E5%85%A5%E9%97%A8(1.1.0)ELF%20%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8C%E7%A8%8B%E5%BA%8F%E6%AE%B5%E8%A7%A3%E6%9E%90(%E7%AE%80%E7%89%88)/" title="菜鸟笔记之PWN入门(1.1.0)ELF 文件格式和程序段解析(简版)">
                         <span class="hidden-mobile">菜鸟笔记之PWN入门(1.1.0)ELF 文件格式和程序段解析(简版)</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
