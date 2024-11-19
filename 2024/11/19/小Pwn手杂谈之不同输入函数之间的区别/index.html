@@ -1,0 +1,648 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/1.png">
+  <link rel="icon" href="/img/1.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="XiDP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言本文涉及 read函数 fgets函数 scanf函数 以及 gets函数 获取字符串后内存的区别，以及在pwntools中使用 sendline 和 send 的区别。实验过程有些冗长，嫌麻烦的师傅可以直接查看下面的总结 实验目标  read fgets scanf 这种可以限定大小的输入，如果输入量小于&#x2F;等于&#x2F;大于它们的输入量分别会出现什么情况 scanf(&quot;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="小Pwn手杂谈(1.0.0)之不同输入函数之间的区别">
+<meta property="og:url" content="http://example.com/2024/11/19/%E5%B0%8FPwn%E6%89%8B%E6%9D%82%E8%B0%88%E4%B9%8B%E4%B8%8D%E5%90%8C%E8%BE%93%E5%85%A5%E5%87%BD%E6%95%B0%E4%B9%8B%E9%97%B4%E7%9A%84%E5%8C%BA%E5%88%AB/index.html">
+<meta property="og:site_name" content="XiDP">
+<meta property="og:description" content="前言本文涉及 read函数 fgets函数 scanf函数 以及 gets函数 获取字符串后内存的区别，以及在pwntools中使用 sendline 和 send 的区别。实验过程有些冗长，嫌麻烦的师傅可以直接查看下面的总结 实验目标  read fgets scanf 这种可以限定大小的输入，如果输入量小于&#x2F;等于&#x2F;大于它们的输入量分别会出现什么情况 scanf(&quot;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/picture/talk1.0.0/1.png">
+<meta property="og:image" content="http://example.com/picture/talk1.0.0/2.png">
+<meta property="og:image" content="http://example.com/picture/talk1.0.0/3.png">
+<meta property="og:image" content="http://example.com/picture/talk1.0.0/4.png">
+<meta property="og:image" content="http://example.com/picture/talk1.0.0/5.png">
+<meta property="og:image" content="http://example.com/picture/talk1.0.0/6.png">
+<meta property="og:image" content="http://example.com/picture/talk1.0.0/7.png">
+<meta property="og:image" content="http://example.com/picture/talk1.0.0/8.png">
+<meta property="og:image" content="http://example.com/picture/talk1.0.0/9.png">
+<meta property="og:image" content="http://example.com/picture/talk1.0.0/10.png">
+<meta property="og:image" content="http://example.com/picture/talk1.0.0/11.png">
+<meta property="og:image" content="http://example.com/picture/talk1.0.0/12.png">
+<meta property="og:image" content="http://example.com/picture/talk1.0.0/13.png">
+<meta property="article:published_time" content="2024-11-19T12:15:54.140Z">
+<meta property="article:modified_time" content="2024-11-18T16:22:51.854Z">
+<meta property="article:author" content="XiDP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/picture/talk1.0.0/1.png">
+  
+  
+  
+  <title>小Pwn手杂谈(1.0.0)之不同输入函数之间的区别 - XiDP</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>XiDP</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/yu2.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="小Pwn手杂谈(1.0.0)之不同输入函数之间的区别"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-11-19 20:15" pubdate>
+          2024年11月19日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          17 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">小Pwn手杂谈(1.0.0)之不同输入函数之间的区别</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本文涉及 <code>read函数</code> <code>fgets函数</code> <code>scanf函数</code> 以及 <code>gets函数</code> 获取字符串后内存的区别，以及在pwntools中使用 <code>sendline</code> 和 <code>send</code> 的区别。实验过程有些冗长，嫌麻烦的师傅可以直接查看下面的总结</p>
+<p>实验目标</p>
+<ol>
+<li><code>read</code> <code>fgets</code> <code>scanf</code> 这种可以限定大小的输入，如果输入量小于&#x2F;等于&#x2F;大于它们的输入量分别会出现什么情况</li>
+<li><code>scanf(&quot;%s&quot;，&amp;buf)</code>这种情况是否存在溢出</li>
+<li><code>gets</code> 输入是怎么处理<code>\n</code>符号的</li>
+</ol>
+<p>下面是我实验用的代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string.h&gt;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">init</span><span class="hljs-params">()</span><br>&#123;<br>    setvbuf(<span class="hljs-built_in">stdin</span>, <span class="hljs-literal">NULL</span>, _IONBF, <span class="hljs-number">0</span>);<br>    setvbuf(<span class="hljs-built_in">stdout</span>, <span class="hljs-literal">NULL</span>, _IONBF, <span class="hljs-number">0</span>);<br>    setvbuf(<span class="hljs-built_in">stderr</span>, <span class="hljs-literal">NULL</span>, _IONBF, <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><span class="hljs-type">char</span> bss[<span class="hljs-number">8</span>];<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    init();<br>    <span class="hljs-type">char</span> *ptr[<span class="hljs-number">13</span>];<br>  <br>    <span class="hljs-comment">// 初始化bss数组</span><br>    <span class="hljs-built_in">memset</span>(bss, <span class="hljs-number">0x22</span>, <span class="hljs-keyword">sizeof</span>(bss)*<span class="hljs-number">3</span>);<br>    <span class="hljs-comment">// 利用循环申请12个0x30大小的堆块，并将对应地址存储在ptr这个指针数组里面</span><br>    <span class="hljs-comment">// 如果申请失败则直接退出程序</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">13</span>; i++) &#123;<br>        ptr[i] = (<span class="hljs-type">char</span> *)<span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x30</span>);<br>        <span class="hljs-keyword">if</span> (!ptr[i]) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-comment">// 不用在意，只是gdb调试时方便跳转的标记</span><br>    sleep(<span class="hljs-number">0.1</span>);<br>    <br>    <span class="hljs-comment">// 使用memset将堆块的内容设置为\x22,为了方便我们区分哪些是我们输入的东西</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">13</span>; i++) &#123;<br>        <span class="hljs-built_in">memset</span>(ptr[i], <span class="hljs-number">0x22</span>, <span class="hljs-number">0x30</span>);<br>    &#125;<br>    sleep(<span class="hljs-number">0.1</span>);<br><br>    <span class="hljs-comment">// 这里free是因为free之后的堆块在pwndbg里面显示绿绿的，方便进行区分不同函数输入</span><br>    <span class="hljs-built_in">free</span>(ptr[<span class="hljs-number">3</span>]);<br>    <span class="hljs-built_in">free</span>(ptr[<span class="hljs-number">7</span>]);<br>    <span class="hljs-built_in">free</span>(ptr[<span class="hljs-number">11</span>]);<br>    sleep(<span class="hljs-number">0.1</span>);<br><br>    <span class="hljs-comment">// step 1 测试read函数，限定输入大小为8字节，查看分别输入 a*6 a*8 a*10 后内存的样子</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;read a*6\n&quot;</span>);<br>    read(<span class="hljs-number">0</span>, ptr[<span class="hljs-number">0</span>], <span class="hljs-number">8</span>);<br>    <span class="hljs-keyword">while</span> (getchar() != <span class="hljs-string">&#x27;\n&#x27;</span> &amp;&amp; getchar() != EOF); <span class="hljs-comment">// 为了防止残留的\x0a影响后续的输入，这里采用了getchar来把多余的\x0a吃掉</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;read a*8\n&quot;</span>);<br>    read(<span class="hljs-number">0</span>, ptr[<span class="hljs-number">1</span>], <span class="hljs-number">8</span>);<br>    <span class="hljs-keyword">while</span> (getchar() != <span class="hljs-string">&#x27;\n&#x27;</span> &amp;&amp; getchar() != EOF);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;read a*10\n&quot;</span>);<br>    read(<span class="hljs-number">0</span>, ptr[<span class="hljs-number">2</span>], <span class="hljs-number">8</span>);<br>    <span class="hljs-keyword">while</span> (getchar() != <span class="hljs-string">&#x27;\n&#x27;</span> &amp;&amp; getchar() != EOF);<br>    sleep(<span class="hljs-number">0.1</span>);<br><br>    <span class="hljs-comment">// step 2 测试fgets函数，限定输入大小为8字节，查看分别输入 a*6 a*8 a*10 后内存的样子</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;fgets a*6\n&quot;</span>);<br>    fgets(ptr[<span class="hljs-number">4</span>], <span class="hljs-number">8</span>, <span class="hljs-built_in">stdin</span>);<br>    <span class="hljs-keyword">while</span> (getchar() != <span class="hljs-string">&#x27;\n&#x27;</span> &amp;&amp; getchar() != EOF);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;fgets a*8\n&quot;</span>);<br>    fgets(ptr[<span class="hljs-number">5</span>], <span class="hljs-number">8</span>, <span class="hljs-built_in">stdin</span>);    <br>    <span class="hljs-keyword">while</span> (getchar() != <span class="hljs-string">&#x27;\n&#x27;</span> &amp;&amp; getchar() != EOF);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;fgets a*10\n&quot;</span>);<br>    fgets(ptr[<span class="hljs-number">6</span>], <span class="hljs-number">8</span>, <span class="hljs-built_in">stdin</span>);<br>    <span class="hljs-keyword">while</span> (getchar() != <span class="hljs-string">&#x27;\n&#x27;</span> &amp;&amp; getchar() != EOF);<br>    sleep(<span class="hljs-number">0.1</span>);<br><br>    <span class="hljs-comment">// step 3 测试scanf函数，限定输入的字符串大小为8字节，查看分别输入 a*6 a*8 a*10 后内存的样子</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;scanf a*6\n&quot;</span>);<br>    <span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%8s&quot;</span>, ptr[<span class="hljs-number">8</span>]);<br>    <span class="hljs-keyword">while</span> (getchar() != <span class="hljs-string">&#x27;\n&#x27;</span> &amp;&amp; getchar() != EOF);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;scanf a*8\n&quot;</span>);<br>    <span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%8s&quot;</span>, ptr[<span class="hljs-number">9</span>]);<br>    <span class="hljs-keyword">while</span> (getchar() != <span class="hljs-string">&#x27;\n&#x27;</span> &amp;&amp; getchar() != EOF);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;scanf a*10\n&quot;</span>);<br>    <span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%8s&quot;</span>, ptr[<span class="hljs-number">10</span>]);<br>    <span class="hljs-keyword">while</span> (getchar() != <span class="hljs-string">&#x27;\n&#x27;</span> &amp;&amp; getchar() != EOF);<br>    sleep(<span class="hljs-number">0.1</span>);<br><br>    <span class="hljs-comment">// step 4 测试gets函数输入之后是什么样子的，仅输入一次，输入6个字节的a</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;gets a*6\n&quot;</span>);<br>    gets(ptr[<span class="hljs-number">12</span>]);<br>    <span class="hljs-keyword">while</span> (getchar() != <span class="hljs-string">&#x27;\n&#x27;</span> &amp;&amp; getchar() != EOF);<br>    sleep(<span class="hljs-number">0.1</span>);<br><br><br>    <span class="hljs-comment">// 测试scanf(&quot;%s&quot;,bss)是否存在溢出</span><br>    <span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%s&quot;</span>,bss);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s&quot;</span>,bss);<br>    <span class="hljs-keyword">while</span> (getchar() != <span class="hljs-string">&#x27;\n&#x27;</span> &amp;&amp; getchar() != EOF);<br>    sleep(<span class="hljs-number">0.1</span>);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>下面我们开始测试:</p>
+<h3 id="start"><a href="#start" class="headerlink" title="start"></a>start</h3><p><img src="/../picture/talk1.0.0/1.png" srcset="/img/loading.gif" lazyload><br>开头在sleep上打断点，方便我们后续使用c快速跟进，查看到bss全局变量在 <code>0x555555558050</code> 这个位置上</p>
+<p>来到第一个sleep所在的地方<br>查看bss段里面是什么，可以看到已经都变成22了，后面输入后改变我们就可以直观的看到<br><img src="/../picture/talk1.0.0/2.png" srcset="/img/loading.gif" lazyload></p>
+<p>来到第二个sleep所在的地方<br>查看堆中内存，可以看到已经都变成22了，后面输入后改变我们就可以直观的看到<br><img src="/../picture/talk1.0.0/3.png" srcset="/img/loading.gif" lazyload></p>
+<p>来到第三个sleep所在的地方<br>查看堆的情况<br><img src="/../picture/talk1.0.0/4.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="read函数"><a href="#read函数" class="headerlink" title="read函数"></a>read函数</h3><p>继续跟进程序，让我们看看read，分别输入 <code>aaaaaa</code> <code>aaaaaaaa</code> <code>aaaaaaaaaa</code><br><img src="/../picture/talk1.0.0/5.png" srcset="/img/loading.gif" lazyload><br>这里仔细的人会发现，<code>read a*6</code> 后面到 <code>read a*8</code> 中间除了输入还空了一行，这是因为包括 <code>\n</code><br>在内我们输入的全部东西都被读入了内存中，<code>getchar</code> 没有读取到<code>\n</code>所以我手动敲了一个回车来结束 <code>getchar</code></p>
+<p>来到第四个sleep所在的地方<br>我们已经使用read输入了，下面我们来查看一下堆内存里面是什么<br><img src="/../picture/talk1.0.0/6.png" srcset="/img/loading.gif" lazyload><br>可以看到输入六个a的话内存里面是 <code>六个a和一个回车符号</code><br>输入八个a的话内存里面是 <code>八个a，回车符号没有被读入</code><br>输入是十个a的话内存里面是 <code>十个a，回车符号没有被读入</code></p>
+<p>虽然实验很简陋但是我们可以简单得出结论，read输入的话会读取指定的字节数，除非遇到<code>\x00</code>，不然输入其他东西都无法阻止read停止，直到读取完后放入指定的内存中，没读取到的部分则保持原样不动</p>
+<h3 id="fgets函数"><a href="#fgets函数" class="headerlink" title="fgets函数"></a>fgets函数</h3><p>继续跟进程序，让我们看看fgets，再次分别输入 <code>aaaaaa</code> <code>aaaaaaaa</code> <code>aaaaaaaaaa</code><br><img src="/../picture/talk1.0.0/7.png" srcset="/img/loading.gif" lazyload><br>查看对应的堆内存<br><img src="/../picture/talk1.0.0/8.png" srcset="/img/loading.gif" lazyload><br>我们不难简单的得出结论，fgets和read不太一样，虽然我们设定了读取8个字节，他并不会老实读取8个字节，而是只读取7个，然后再主动添加一个<code>\x00</code>来作为输入的字符串的结尾</p>
+<p>因此像read这样的输入函数，如果buf为8字节的字符串，用户输入8字节，而read傻傻的读取八字节，那么字符串结尾的<code>\x00</code>就会被省略掉，如果此时有一个 <code>buf2</code> 和 <code>buf</code> 的位置相邻，那么使用puts输出buf的时候就会连同buf2一起输出出来，因为buf失去了<code>\x00</code>，puts这类输出函数就没办法判断这个字符串什么时候结束，只能无脑输出，直到遇见<code>\x00</code></p>
+<h3 id="scanf函数"><a href="#scanf函数" class="headerlink" title="scanf函数"></a>scanf函数</h3><p>继续跟进程序，让我们看看scanf,再次分别输入 <code>aaaaaa</code> <code>aaaaaaaa</code> <code>aaaaaaaaaa</code><br><img src="/../picture/talk1.0.0/9.png" srcset="/img/loading.gif" lazyload><br>查看对应的堆内存<br><img src="/../picture/talk1.0.0/10.png" srcset="/img/loading.gif" lazyload><br>可以发现我们的scanf函数非常的聪明，他不像fgets函数偷工减料，让他读取8字节他是真读取<br>并且同时他读取完八字节后，会再在后面加一个<code>\x00</code>来保持字符串的独立性</p>
+<p>继续跟进程序，让我们看看gets,输入 <code>aaaaaa</code><br><img src="/../picture/talk1.0.0/11.png" srcset="/img/loading.gif" lazyload><br>查看堆内存<br><img src="/../picture/talk1.0.0/12.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="scanf函数的溢出"><a href="#scanf函数的溢出" class="headerlink" title="scanf函数的溢出"></a>scanf函数的溢出</h3><p>最后来看看scanf(“%s”,bss)的溢出形式<br><img src="/../picture/talk1.0.0/13.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><code>read函数</code>:第三个参数是几就读取几个，一旦数量超过第三个参数后就直接忽略，就只读取到第三个参数所规定的数量为止，不会自动添加<code>\x00</code>,如果 <code>允许输入长度</code> <code>=</code> <code>字符串长度</code> 可能导致字符串失去结尾的<code>\x00</code></p>
+<p><code>fgets函数</code>:读取的字节数为<code>第二个参数-1</code>,超出的部分会被忽略，会自动在最后添加<code>\x00</code></p>
+<p><code>scanf(&quot;%?s&quot;, &amp;buf)</code>:读取?个字节,超出的部分会被忽略,然后在最末尾添加<code>\x00</code>。<code>scanf(&quot;%s&quot;, &amp;buf)</code>没有规定读取字节数，存在溢出</p>
+<p><code>gets函数</code>:无脑读取，一直读取，直到用户输入回车才停止，输入的数据全部读取,但是最后会把读取到的回车(<code>\x0a</code>)变成<code>\x00</code></p>
+<p>对于上面函数如何选择 <code>send</code> 和 <code>sendline</code></p>
+<ol>
+<li><p>对于read函数 <code>send</code> 和 <code>sendline</code> 都可以，但是<code>建议使用send</code>，不然屁股后面多个<code>\x0a</code>，有时候打入<code>/bin/sh</code>字符串的时候使用sendline没发现有个<code>\x0a</code>在屁股上一直打不通也是很痛苦的</p>
+</li>
+<li><p>对于 <code>fgets</code> <code>gets</code> <code>scanf</code> 这三个函数只能使用sendline</p>
+</li>
+</ol>
+<p>什么?你问我上面的 <code>send</code> 和 <code>sendline</code> 是怎么总结出来的?<br>由于时间关系(懒得再做一遍了)，直接看ZikH26师傅的博客来总结了<a target="_blank" rel="noopener" href="https://www.cnblogs.com/ZIKH26/articles/15855666.html">探究pwntools中sendline的回车所造成的影响（什么时候用sendline，什么时候用send） - ZikH26 - 博客园 (cnblogs.com)</a><br>(不要喷我啊，求求了我什么都会做的<code>Orz</code>)</p>
+<p>最后感谢您的观看</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>小Pwn手杂谈(1.0.0)之不同输入函数之间的区别</div>
+      <div>http://example.com/2024/11/19/小Pwn手杂谈之不同输入函数之间的区别/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>XiDP</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年11月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/10/05/%E8%8F%9C%E9%B8%9F%E7%AC%94%E8%AE%B0%E4%B9%8Bpwn%E5%B7%A5%E5%85%B7%E7%AF%87--pwntools%E5%BA%93%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" title="菜鸟笔记之pwn工具篇--pwntools库的基本使用">
+                        <span class="hidden-mobile">菜鸟笔记之pwn工具篇--pwntools库的基本使用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
