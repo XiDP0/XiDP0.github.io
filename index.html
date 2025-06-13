@@ -1,626 +1,177 @@
-
-
-<!DOCTYPE html>
-<html lang="zh-CN" data-default-color-scheme=auto>
-
-
-
-<head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/1.png">
-  <link rel="icon" href="/img/1.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="XiDP">
-  <meta name="keywords" content="">
-  
-    <meta property="og:type" content="website">
-<meta property="og:title" content="XiDP">
-<meta property="og:url" content="http://example.com/index.html">
-<meta property="og:site_name" content="XiDP">
-<meta property="og:locale" content="zh_CN">
-<meta property="article:author" content="XiDP">
-<meta name="twitter:card" content="summary_large_image">
-  
-  
-  
-  <title>XiDP</title>
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
-
-
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
-  
-
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
-  
-
-
-  
-<meta name="generator" content="Hexo 7.3.0"></head>
-
-
-<body>
-  
-
-  <header>
-    
-
-<div class="header-inner" style="height: 100vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>XiDP</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/" target="_self">
-                <i class="iconfont icon-home-fill"></i>
-                <span>首页</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/" target="_self">
-                <i class="iconfont icon-archive-fill"></i>
-                <span>归档</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/links/" target="_self">
-                <i class="iconfont icon-link-fill"></i>
-                <span>友链</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/" target="_self">
-                <i class="iconfont icon-user-fill"></i>
-                <span>关于</span>
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              <i class="iconfont icon-search"></i>
-            </a>
-          </li>
-          
-        
-        
-          <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
-              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
-            </a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-</nav>
-
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/yu.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="XiDP&#39;s Blog"></span>
-          
-        </div>
-
-        
-      </div>
-
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>XiDP</title><meta name="author" content="XiDP"><meta name="copyright" content="XiDP"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><link rel="shortcut icon" href="/img/Qhead.png"><link rel="canonical" href="http://example.com/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
       
-        <div class="scroll-down-bar">
-          <i class="iconfont icon-arrowdown"></i>
-        </div>
-      
-    </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      <div class="container nopadding-x-md">
-        <div id="board"
-          style="margin-top: 0">
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
-
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/01/13/%E5%B0%8FPwn%E6%89%8B%E6%9D%82%E8%B0%88%E4%B9%8B%E5%A6%82%E4%BD%95%E6%90%9C%E7%B4%A2%E4%B8%8B%E8%BD%BDlibc%E4%BB%A5%E5%8F%8A%E5%85%B6%E5%AF%B9%E5%BA%94%E7%9A%84ld%E6%96%87%E4%BB%B6/" target="_self">
-          小Pwn手杂谈之如何搜索下载libc以及其对应的ld文件
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/01/13/%E5%B0%8FPwn%E6%89%8B%E6%9D%82%E8%B0%88%E4%B9%8B%E5%A6%82%E4%BD%95%E6%90%9C%E7%B4%A2%E4%B8%8B%E8%BD%BDlibc%E4%BB%A5%E5%8F%8A%E5%85%B6%E5%AF%B9%E5%BA%94%E7%9A%84ld%E6%96%87%E4%BB%B6/" target="_self">
-        <div>
-          前言本文的完成离不开tw11ty师傅的帮助，在此深表感谢 推荐使用下面的网址https://launchpad.net/ubuntu/focal/amd64/libc6网站页面如下: 如何搜索:我们需要使用URL来直接进行版本的搜索https://launchpad.net/ubuntu/版本/amd64/libc6我们只需要修改上面的 版本 就可以替换对不同版本的libc进行查找下面是不同的版本
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2025-01-13 22:52" pubdate>
-              2025-01-13
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/11/19/%E5%B0%8FPwn%E6%89%8B%E6%9D%82%E8%B0%88%E4%B9%8B%E4%B8%8D%E5%90%8C%E8%BE%93%E5%85%A5%E5%87%BD%E6%95%B0%E4%B9%8B%E9%97%B4%E7%9A%84%E5%8C%BA%E5%88%AB/" target="_self">
-          小Pwn手杂谈之不同输入函数之间的区别
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/11/19/%E5%B0%8FPwn%E6%89%8B%E6%9D%82%E8%B0%88%E4%B9%8B%E4%B8%8D%E5%90%8C%E8%BE%93%E5%85%A5%E5%87%BD%E6%95%B0%E4%B9%8B%E9%97%B4%E7%9A%84%E5%8C%BA%E5%88%AB/" target="_self">
-        <div>
-          前言本文涉及 read函数 fgets函数 scanf函数 以及 gets函数 获取字符串后内存的区别，以及在pwntools中使用 sendline 和 send 的区别。实验过程有些冗长，嫌麻烦的师傅可以直接查看下面的总结 实验目标  read fgets scanf 这种可以限定大小的输入，如果输入量小于&#x2F;等于&#x2F;大于它们的输入量分别会出现什么情况 scanf(&quot;
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-11-19 20:15" pubdate>
-              2024-11-19
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/10/05/PWN%E5%85%A5%E9%97%A8(1.1.2)C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/" target="_self">
-          PWN入门(1.1.2)C程序调用过程与函数栈变化（32位 vs 64位）(Intel)
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/10/05/PWN%E5%85%A5%E9%97%A8(1.1.2)C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/" target="_self">
-        <div>
-          本文使用Intel 的32位为例子进行举例。64位本质上和32位类似，主要区别在于函数参数的调用方式，文章结尾会简要提及。 重新回顾一下栈pop和push指令 12// 将0x50的压入栈push 0x50  1234// 将esp指向的数据放入指定的寄存器中pop 寄存器名字比如 ：pop eax执行之后eax的值就变成了0x50  栈帧是什么?栈帧，也就是stack frame，其本质就是一种
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-10-05 20:52" pubdate>
-              2024-10-05
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/10/05/PWN%E5%85%A5%E9%97%A8(1.1.3)Linux%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E5%92%8CELF%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4/" target="_self">
-          PWN入门(1.1.3)Linux基础操作和ELF文件保护
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/10/05/PWN%E5%85%A5%E9%97%A8(1.1.3)Linux%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E5%92%8CELF%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4/" target="_self">
-        <div>
-          这里不讨论Linux的历史及其与Windows的比较。直接介绍一些简单基础的操作。首先我们需要安装一个Linux操作系统(首先推荐Ubuntu),我们需要安装一个VM虚拟机，然后在里面搭建一个Ubuntu的虚拟机 可以直接百度搜索，这里推荐一个文章安装虚拟机（VMware）保姆级教程（附安装包）_vmware虚拟机-CSDN博客根据教程你可以成功安装Ubuntu虚拟机之后第一件事情不是配置PWN环
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-10-05 20:52" pubdate>
-              2024-10-05
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/10/05/pwntools%E5%BA%93%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" target="_self">
-          pwntools库的基本使用
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/10/05/pwntools%E5%BA%93%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" target="_self">
-        <div>
-          啥是pwntools?Pwntools 是一个用于漏洞利用和二进制分析的 Python 库，广泛应用于安全研究、渗透测试和竞争性编程（如 CTF，Capture The Flag）中。它为用户提供了一套强大的工具和功能，以简化与二进制文件的交互、网络通信以及各种常见任务的执行。 简而言之，pwntools可以说是pwn手必备的工具，它帮助pwn手连接远程服务器，发送信息，接收信息，以及提供了很多工
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-10-05 20:52" pubdate>
-              2024-10-05
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/10/05/Pwndbg%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/" target="_self">
-          Pwndbg基础使用
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/10/05/Pwndbg%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/" target="_self">
-        <div>
-          什么是pwndbg?它是gdb的一个插件，增加了许多功能，来帮助pwn手可以快速寻找到所需要的信息，除了pwndbg之外还有peda、gef等工具可以用来协助进行调试。 如何给pwndbg分屏?12vim ~/.gdbinitset context-output /dev/pts/2 # 这里修改成2，那么就会在第二个终端显示信息  pwndbg的基础操作:启动调试: 12gdb ./文件名比如:
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-10-05 20:52" pubdate>
-              2024-10-05
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/10/05/PWN%E5%85%A5%E9%97%A8(1.1.0)ELF%20%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8C%E7%A8%8B%E5%BA%8F%E6%AE%B5%E8%A7%A3%E6%9E%90(%E7%AE%80%E7%89%88)/" target="_self">
-          PWN入门(1.1.0)ELF 文件格式和程序段解析(简版)
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/10/05/PWN%E5%85%A5%E9%97%A8(1.1.0)ELF%20%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8C%E7%A8%8B%E5%BA%8F%E6%AE%B5%E8%A7%A3%E6%9E%90(%E7%AE%80%E7%89%88)/" target="_self">
-        <div>
-          ELF (Executable and Linkable Format): 是一种用于 可执行文件、目标文件 和 库 的文件格式，类似于 Windows 下的 PE 文件格式。 ELF 主要包括三种类型的文件：  可重定位文件 (relocatable): 编译器和汇编器产生的 .o 文件，由 Linker 处理。 可执行文件 (executable): Linker 对 .o 文件进行处理后输出
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-10-05 20:52" pubdate>
-              2024-10-05
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/10/05/PWN%E5%85%A5%E9%97%A8(1.0.0)%E5%89%8D%E8%A8%80/" target="_self">
-          PWN入门(1.0.0)前言
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/10/05/PWN%E5%85%A5%E9%97%A8(1.0.0)%E5%89%8D%E8%A8%80/" target="_self">
-        <div>
-          什么是 PWN？PWN 是黑客术语中的俚语，是指攻破设备或者系统。它的发音类似于“砰”，当然也有师傅把它叫作“胖”。PWN 的目标是获取系统的控制权或执行未经授权的操作。 如何入门 PWN前置知识 C 语言  学习内容： 程序结构和基础语法 数据类型、分支语句（如 if、switch）和循环（如 for、while） 指针和结构体   学习资源： 浙江大学翁恺教你 C 语言程序设计 C 语言教程
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-10-05 20:52" pubdate>
-              2024-10-05
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/10/05/PWN%E5%85%A5%E9%97%A8(1.1.1)%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%A0%86%E6%A0%88%E5%85%A5%E9%97%A8/" target="_self">
-          PWN入门(1.1.1)汇编语言基础与堆栈入门
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/10/05/PWN%E5%85%A5%E9%97%A8(1.1.1)%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%A0%86%E6%A0%88%E5%85%A5%E9%97%A8/" target="_self">
-        <div>
-          啥是汇编语言?有啥用?深入了解计算机底层，我们会发现，计算机实际上只能执行一些非常基础的操作，但其速度却非常快。计算机的CPU只能执行机器码，即由一系列0和1组成的指令。不同的0和1组合会触发计算机中的不同电路，从而进行各种操作。由于这些0和1的组合很长，阅读起来不方便，因此通常以16进制形式显示。然而，即便如此，16进制的表示仍然难以理解。为了简化这一过程，汇编语言应运而生，它用更易读的符号来表
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-10-05 20:52" pubdate>
-              2024-10-05
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-
-
-
-
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
-    </div>
-  
-  
-  
-  
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
       }
-      var text = subtitle.getAttribute('data-typed-text');
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
       
-        typing(text);
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
       
-    })(window, document);
-  </script>
-
-
-
-
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
   
-    <script  src="/js/img-lazyload.js" ></script>
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'XiDP',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'home'
+}</script><link rel="stylesheet" href="/css/loading.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (false) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="/css/progress_bar.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/Qhead.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url(/img/girl.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">XiDP</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="site-info"><h1 id="site-title">XiDP</h1></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/06/13/2025%20ISCC%20%E6%93%82%E5%8F%B0%E8%B5%9BPwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 ISCC 擂台赛Pwn-wp(含附件)">2025 ISCC 擂台赛Pwn-wp(含附件)</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-06-13T10:56:07.285Z" title="发表于 2025-06-13 18:56:07">2025-06-13</time></span></div><div class="content">前言相比练武赛，擂台赛的题目指令还是要高很多的，里面都是师傅们用心出的题目，感觉创新度还是有的，但是为什么那么多vm pwn？？？ 通过网盘分享的文件：2025ISCC擂台赛Pwn全部附件.rar链接: https://pan.baidu.com/s/1y_zdFltMZmCxfxalS9EuCw?pwd=xidp 提取码: xidp 解出能力有限，很多方法可能并不是最优解，如果有师傅有更方便的方法愿意分享的话我会非非非常感谢的 call checksec查看程序保护，发现程序没有开启pie保护以及canary保护程序存在明显的栈溢出 直接溢出打ROP泄露libc地址然后执行system(&quot;/bin/sh&quot;)即可完整exp如下 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950from xidp import *#---------------------初始化----------------------------arch =...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/06/13/2025%20ISCC%20%E7%BB%83%E6%AD%A6%E8%B5%9BPwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 ISCC 练武赛Pwn-wp(含附件)">2025 ISCC 练武赛Pwn-wp(含附件)</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-06-13T10:47:28.963Z" title="发表于 2025-06-13 18:47:28">2025-06-13</time></span></div><div class="content">前言去年个人赛报名了忘记打了(笑), 所以这应该算是我第一次参加ISCC, 体验也是差到没边了主办方也是非常幽默，pwn和web都是公用容器，那web最后都被当成玩具玩坏了下面是这次练武题pwn方向所有附件通过网盘分享的文件：2025ISCC练武赛Pwn全部附件.rar链接: https://pan.baidu.com/s/1aDBEOZ4XESb6yfCrCI5Wgg?pwd=xidp 提取码: xidp 解出genius 先后输入 no 和 thanks 最终进入 function3函数 中，这里存在两个溢出，一个是 read溢出，一个是 gets溢出我们注意到read溢出下面有一个pritnf输出，所以我们可以通过read来覆盖掉canary结尾的\x00使得canary被pritnf输出，然后再利用gets溢出打ROP，注意程序已经为我们提供了 backdoor 完整exp如下: 123456789101112131415161718192021222324252627282930313233343536373839404142from xidp import...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/06/13/2025%20UCSCCTF%20Pwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 UCSCCTF Pwn-wp(含附件)">2025 UCSCCTF Pwn-wp(含附件)</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-06-13T05:39:29.083Z" title="发表于 2025-06-13 13:39:29">2025-06-13</time></span></div><div class="content">前言说实话有点失望, 比赛平台超级卡，而且比赛一开始平台就崩了，题目难度偏低(也是很遗憾，本来可以抢个血分的，但是太卡了靶机就是打不开)但是还是感谢比赛出题的师傅愿意分享自己的题目 通过网盘分享的文件：2025UCSCCTF.rar链接: https://pan.baidu.com/s/17yqcmGRXWN1oNMvgZNRv5w?pwd=xidp 提取码: xidp内含2025 UCSCCTF三个pwn题的附件 由于题目比较简单我就简单介绍我的思路并放上exp了 BoFido-Ucsc程序里开头有seed =...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/06/13/2025%20XYCTF%20Pwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 XYCTF Pwn-wp(含附件)">2025 XYCTF Pwn-wp(含附件)</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-06-13T05:27:37.342Z" title="发表于 2025-06-13 13:27:37">2025-06-13</time></span></div><div class="content">前言总体来说Pwn方向题目难度属于中等,属于那种一眼看不出要咋做,但多试试又能做出来的那种,比赛的时候甚至有几只队伍AK了Pwn方向。感觉题目还是很不错的尽管比赛中有一些小意外像是有些题目附件给错了，但是XYCTF的师傅们都是无偿出题纯热爱向大伙分享自己的题目和知识，感谢所有XYCTF出题的师傅，明年我还来打(〃&#39;▽&#39;〃) 通过网盘分享的文件：2025XYCTF.rar链接: https://pan.baidu.com/s/1yf7piV-H4U2qtXiQyo9eBw?pwd=xidp 提取码: xidp其中含有pwn方向全部赛题、官方wp、奶龙出题人提供的奶龙wp以及ddw队伍的师傅分享在群里的pwn方向全解wp Ret2libc’s...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/06/13/1/" title="如何搜索下载libc以及其对应的ld文件">如何搜索下载libc以及其对应的ld文件</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-06-13T05:17:15.335Z" title="发表于 2025-06-13 13:17:15">2025-06-13</time></span></div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/06/13/%E9%9D%9E%E6%A0%88%E4%B8%8A%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%88%A9%E7%94%A8%E6%96%B9%E6%B3%95/" title="非栈上格式化字符串的利用方法">非栈上格式化字符串的利用方法</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-06-13T05:16:25.790Z" title="发表于 2025-06-13 13:16:25">2025-06-13</time></span></div><div class="content">前言本文以第六届强网拟态线下赛的格式化字符串Pwn题为例，分享非栈上格式化字符串的利用方法。主要涵盖两个关键技术点：   多级指针链利用：当格式化字符串不在栈上时，通过修改栈上现有的多级指针链（二重&#x2F;三重指针）来间接控制目标内存  高位截断技术：当前期输出字符数已超过后期需求值时，利用0x10000溢出特性实现单字节精确写入  同时探讨为何不能在同一条指针链上使用 $ 符号进行连续修改的问题，并提出个人结论（如有错误希望师傅们指出）。 通过网盘分享的文件：第六届强网拟态fmt.rar链接: https://pan.baidu.com/s/19-fAYm0DuEhkSO7SzlJLAg?pwd=xidp 提取码: xidp 第六届强网拟态线下赛的格式化字符串 程序逻辑很简单，白给一个stack的地址，然后给一个非栈上格式化字符串的机会，最后没办法控制main函数的返回地址，因为是直接使用exit退出 显而易见的我们遇到了两个问题:  首先我们的 buf 不在栈上，没办法随意在栈中写入我们想要的地址然后去修改 其次我们只有一次机会  首先来看看如果是 非栈上的格式化字符串...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/06/13/ret2gets%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E5%88%A9%E7%94%A8%E6%96%B9%E6%B3%95/" title="ret2gets的原理与利用方法">ret2gets的原理与利用方法</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-06-13T05:05:26.680Z" title="发表于 2025-06-13 13:05:26">2025-06-13</time></span></div><div class="content">前言​​ret2gets是一种利用glibc优化特性（高版本编译器）的漏洞利用技术，核心是通过gets函数配合printf&#x2F;puts实现libc地址泄露。该技术适用于:  存在栈溢出漏洞 程序包含gets函数 ​​缺乏直接控制rdi寄存器的gadget​​（如pop rdi; ret）   技术原型参考: ret2gets | pwn-notes  ret2gets | pwn-notes演示程序: ret2gets_demo https://pan.baidu.com/s/1rf8JEi1sGBZdM-MxpnjMTg?pwd=xidp 提取码: xidp  程序中 pop rdi; ret 的来源12345678// gcc demo.c -o demo -no-pie -fno-stack-protector#include &lt;stdio.h&gt;int main() &#123;	char buf[0x20];	puts(&quot;ROP me if you can!&quot;);	gets(buf);&#125;  我们正常会采用的方法很简单就是...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/06/12/%E4%B8%8D%E5%90%8C%E8%BE%93%E5%85%A5%E5%87%BD%E6%95%B0%E4%B9%8B%E9%97%B4%E7%9A%84%E5%8C%BA%E5%88%AB/" title="不同输入函数之间的区别">不同输入函数之间的区别</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-06-12T09:27:37.570Z" title="发表于 2025-06-12 17:27:37">2025-06-12</time></span></div><div class="content">前言本文涉及 read函数 fgets函数 scanf函数 以及 gets函数 获取字符串后内存的区别，以及在pwntools中使用 sendline 和 send 的区别。实验过程有些冗长，嫌麻烦的师傅可以直接查看下面的总结 实验目标  read fgets scanf 这种可以限定大小的输入，如果输入量小于&#x2F;等于&#x2F;大于它们的输入量分别会出现什么情况 scanf(&quot;%s&quot;，&amp;buf)这种情况是否存在溢出 gets 输入是怎么处理\n符号的  下面是我实验用的代码 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293#include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;#include...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/06/12/%E5%A6%82%E4%BD%95%E6%90%9C%E7%B4%A2%E4%B8%8B%E8%BD%BDlibc%E4%BB%A5%E5%8F%8A%E5%85%B6%E5%AF%B9%E5%BA%94%E7%9A%84ld%E6%96%87%E4%BB%B6/" title="如何搜索下载libc以及其对应的ld文件">如何搜索下载libc以及其对应的ld文件</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-06-12T09:27:37.570Z" title="发表于 2025-06-12 17:27:37">2025-06-12</time></span></div><div class="content">查找网站推荐使用下面的网址https://launchpad.net/ubuntu/focal/amd64/libc6网站页面如下: 如何搜索我们需要使用URL来直接进行版本的搜索https://launchpad.net/ubuntu/版本/amd64/libc6我们只需要修改上面的 版本 就可以替换对不同版本的libc进行查找下面是不同的版本名称也就是我们分别将 版本 修改为 :plucky oracular noble 等就可以查到对应的Ubuntu版本所使用的历史libc版本 下面使用 Ubuntu20 版本来举例比如我们想要找一个glibc版本为2.31的glibc那么2.31的glibc应该是对应的Ubuntu20版本那么我们就将版本修改为 focal 也就是URL修改为(注意这里focal必须全部小写)https://launchpad.net/ubuntu/focal/amd64/libc6 然后就会看到不同的glibc版本，选择我们需要的版本，点击进入 这里我们使用 2.31-0ubuntu9.15...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/06/12/Linux%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E5%92%8CELF%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4/" title="Linux基础操作和ELF文件保护">Linux基础操作和ELF文件保护</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2025-06-12T09:27:37.569Z" title="发表于 2025-06-12 17:27:37">2025-06-12</time></span></div><div class="content">基础Linux指令 查看当前目录：  pwd：打印当前工作目录路径。    列出目录内容：  ls：列出当前目录的文件和文件夹。 ls -l：显示详细信息。 ls -a：显示所有文件，包括隐藏文件。    切换目录：  cd 目录名：进入指定目录。 cd ..：返回上级目录。    创建文件和目录：  touch 文件名：创建空文件。 mkdir 目录名：创建新目录。   删除文件和目录：  rm 文件名：删除文件。 rm -r 目录名：递归删除目录及其内容。   移动和重命名文件：  mv 源文件 目标：移动或重命名文件或目录。   复制文件和目录：  cp 源文件 目标：复制文件。 cp -r 源目录 目标：递归复制目录。   查看文件内容：  cat 文件名：显示文件内容。 less 文件名：分页查看文件内容，适合查看长文件。   编辑文件：  nano 文件名 或 vim 文件名：使用nano或vim编辑文件。   查找文件：  find /路径 -name 文件名：在指定路径下查找文件。   显示系统信息：  uname...</div></div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/#content-inner">2</a><a class="extend next" rel="next" href="/page/2/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/Qhead.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">XiDP</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/XiDP0"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20ISCC%20%E6%93%82%E5%8F%B0%E8%B5%9BPwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 ISCC 擂台赛Pwn-wp(含附件)">2025 ISCC 擂台赛Pwn-wp(含附件)</a><time datetime="2025-06-13T10:56:07.285Z" title="发表于 2025-06-13 18:56:07">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20ISCC%20%E7%BB%83%E6%AD%A6%E8%B5%9BPwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 ISCC 练武赛Pwn-wp(含附件)">2025 ISCC 练武赛Pwn-wp(含附件)</a><time datetime="2025-06-13T10:47:28.963Z" title="发表于 2025-06-13 18:47:28">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20UCSCCTF%20Pwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 UCSCCTF Pwn-wp(含附件)">2025 UCSCCTF Pwn-wp(含附件)</a><time datetime="2025-06-13T05:39:29.083Z" title="发表于 2025-06-13 13:39:29">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20XYCTF%20Pwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 XYCTF Pwn-wp(含附件)">2025 XYCTF Pwn-wp(含附件)</a><time datetime="2025-06-13T05:27:37.342Z" title="发表于 2025-06-13 13:27:37">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/1/" title="如何搜索下载libc以及其对应的ld文件">如何搜索下载libc以及其对应的ld文件</a><time datetime="2025-06-13T05:17:15.335Z" title="发表于 2025-06-13 13:17:15">2025-06-13</time></div></div></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>归档</span>
+      
+    </div>
   
-
-
-
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-</body>
-</html>
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/06/">
+            <span class="card-archive-list-date">
+              六月 2025
+            </span>
+            <span class="card-archive-list-count">16</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div></div></div></main><footer id="footer" style="background-image: url(/img/girl.png);"><div id="footer-wrap"></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div></div></body></html>

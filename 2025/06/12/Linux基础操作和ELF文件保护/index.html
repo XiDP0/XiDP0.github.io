@@ -1,0 +1,319 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux基础操作和ELF文件保护 | XiDP</title><meta name="author" content="XiDP"><meta name="copyright" content="XiDP"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="基础Linux指令 查看当前目录：  pwd：打印当前工作目录路径。    列出目录内容：  ls：列出当前目录的文件和文件夹。 ls -l：显示详细信息。 ls -a：显示所有文件，包括隐藏文件。    切换目录：  cd 目录名：进入指定目录。 cd..."><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Linux基础操作和ELF文件保护",
+  "url": "http://example.com/2025/06/12/Linux%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E5%92%8CELF%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4/",
+  "image": "http://example.com/img/Qhead.png",
+  "datePublished": "2025-06-12T09:27:37.569Z",
+  "dateModified": "2025-06-13T04:50:25.030Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "XiDP",
+      "url": "http://example.com/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/Qhead.png"><link rel="canonical" href="http://example.com/2025/06/12/Linux%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E5%92%8CELF%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux基础操作和ELF文件保护',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/loading.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (false) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="/css/progress_bar.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/Qhead.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/yu2.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">XiDP</span></a><a class="nav-page-title" href="/"><span class="site-name">Linux基础操作和ELF文件保护</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Linux基础操作和ELF文件保护</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-06-12T09:27:37.569Z" title="发表于 2025-06-12 17:27:37">2025-06-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-06-13T04:50:25.030Z" title="更新于 2025-06-13 12:50:25">2025-06-13</time></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:100,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2025-06-13 12:50:25&quot;}" hidden></div><h3 id="基础Linux指令"><a href="#基础Linux指令" class="headerlink" title="基础Linux指令"></a>基础Linux指令</h3><ol>
+<li><p><strong>查看当前目录</strong>：</p>
+<ul>
+<li><code>pwd</code>：打印当前工作目录路径。</li>
+<li><img src="/../picture/pwn1.1.3/pwd.png"></li>
+</ul>
+</li>
+<li><p><strong>列出目录内容</strong>：</p>
+<ul>
+<li><code>ls</code>：列出当前目录的文件和文件夹。</li>
+<li><code>ls -l</code>：显示详细信息。</li>
+<li><code>ls -a</code>：显示所有文件，包括隐藏文件。</li>
+<li><img src="/../picture/pwn1.1.3/ls.png"></li>
+</ul>
+</li>
+<li><p><strong>切换目录</strong>：</p>
+<ul>
+<li><code>cd 目录名</code>：进入指定目录。</li>
+<li><code>cd ..</code>：返回上级目录。</li>
+<li><img src="/../picture/pwn1.1.3/cd.png"></li>
+</ul>
+</li>
+<li><p><strong>创建文件和目录</strong>：</p>
+<ul>
+<li><code>touch 文件名</code>：创建空文件。</li>
+<li><code>mkdir 目录名</code>：创建新目录。</li>
+</ul>
+</li>
+<li><p><strong>删除文件和目录</strong>：</p>
+<ul>
+<li><code>rm 文件名</code>：删除文件。</li>
+<li><code>rm -r 目录名</code>：递归删除目录及其内容。</li>
+</ul>
+</li>
+<li><p><strong>移动和重命名文件</strong>：</p>
+<ul>
+<li><code>mv 源文件 目标</code>：移动或重命名文件或目录。</li>
+</ul>
+</li>
+<li><p><strong>复制文件和目录</strong>：</p>
+<ul>
+<li><code>cp 源文件 目标</code>：复制文件。</li>
+<li><code>cp -r 源目录 目标</code>：递归复制目录。</li>
+</ul>
+</li>
+<li><p><strong>查看文件内容</strong>：</p>
+<ul>
+<li><code>cat 文件名</code>：显示文件内容。</li>
+<li><code>less 文件名</code>：分页查看文件内容，适合查看长文件。</li>
+</ul>
+</li>
+<li><p><strong>编辑文件</strong>：</p>
+<ul>
+<li><code>nano 文件名</code> 或 <code>vim 文件名</code>：使用nano或vim编辑文件。</li>
+</ul>
+</li>
+<li><p><strong>查找文件</strong>：</p>
+<ul>
+<li><code>find /路径 -name 文件名</code>：在指定路径下查找文件。</li>
+</ul>
+</li>
+<li><p><strong>显示系统信息</strong>：</p>
+<ul>
+<li><code>uname -a</code>：显示系统信息。</li>
+<li><code>top</code>：查看当前运行的进程和系统资源使用情况。</li>
+</ul>
+</li>
+<li><p><strong>查看和管理进程</strong>：</p>
+<ul>
+<li><code>ps aux</code>：列出所有进程。</li>
+<li><code>kill 进程ID</code>：终止指定进程。</li>
+</ul>
+</li>
+<li><p><strong>清空当前页面</strong>：</p>
+<ul>
+<li><code>clear</code></li>
+</ul>
+</li>
+<li><p><strong>获取管理员权限</strong>：</p>
+<p>第一次登入的时候你会发现你没有设置root权限</p>
+<ul>
+<li><code>sudo +命令</code>：以超级用户权限执行命令。<code>sudo</code> 允许普通用户临时获取管理员权限来执行特定任务。</li>
+<li><code>sudo root</code>：输入密码后成为高级用户(输入的密码是看不见的)。</li>
+</ul>
+</li>
+<li><p><strong>输入文本内容</strong>：</p>
+<ul>
+<li><code>cat</code>：显示文件内容</li>
+<li><img src="/../picture/pwn1.1.3/cat.png"></li>
+</ul>
+</li>
+</ol>
+<h3 id="ELF文件保护"><a href="#ELF文件保护" class="headerlink" title="ELF文件保护"></a>ELF文件保护</h3><p>Linux ELF文件的保护主要有四种:<br>Canary<br>NX<br>PIE<br>RELRO<br>分别用于应付不同的漏洞,同时后面我们也会学习绕过它们的方法,下面让我们来分别了解它们的工作原理和起到的保护作用</p>
+<h4 id="1-Canary"><a href="#1-Canary" class="headerlink" title="1.Canary"></a>1.Canary</h4><p><code>Canary</code>是金丝雀的意思。技术上表示最先的测试的意思。<br>这个来自以前挖煤的时候，矿工都会先把金丝雀放进矿洞，或者挖煤的时候一直带着金丝雀。金丝雀对甲烷和一氧化碳浓度比较敏感，会先报警。所以大家都用Canary来搞最先的测试。</p>
+<p><code>Linux的Canary</code>指的是在<code>ebp/rbp旧值之前</code>添加的一串随机数(不超过机械字长)(也叫做cookie)，<code>当程序会在执行到此处的时候会检测Canary的值是否和刚开始的一样，如果出现缓冲区溢出攻击，覆盖到了Canary(也就是Canary的值发生了改变)，系统检测到Canary的值发生了变化，那么程序会立马崩溃，以防止被篡改的程序执行奇怪的东西</code></p>
+<p>而<code>Canary</code>的末位一定是<code>\x00</code>。<code>\x00</code>是一个用于表示字符串结束的符号，也就是说类似<code>puts函数</code>这类函数输出字符串的时候遇到<code>\x00</code>就会停止继续输出(同样<code>strcpy函数</code>复制字符串的时候遇到<code>\x00</code>也会停止,后面会讲到这个<code>\x00</code>也有不同的用法可以绕过一些检测)。</p>
+<p>之所以<code>Canary</code>的<code>末位</code>添加<code>\x00</code>是因为计算机往往是<code>小端程序</code>。比如:<br><code>Canary</code>是<code>0x1122334455667700</code>。<br>那么在计算机中储存的时候它是:<code>\x00\x77\x66\x55\x44\x33\x22\x11</code>这样储存的<br>那么<code>\x00</code>就在内存的开头了，当<code>Canary</code>前面有字符串需要输出的时候，一直到<code>Canary</code>的<code>\x00</code>就会停下。这使得<code>Canary</code>不会被输出，以此保护<code>Canary</code>不泄露(之后我们会讲到一种绕过<code>Canary</code>的方法就是尝试覆盖掉这个<code>\x00</code>让<code>Canary</code>被<code>puts</code>之类的函数输出)</p>
+<p>GCC开启Canary和关闭Canary</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gcc -o test test.c <span class="comment">// 默认情况下，不开启Canary保护</span></span><br><span class="line">gcc -fno-<span class="built_in">stack</span>-protector -o test test.c <span class="comment">//禁用栈保护</span></span><br><span class="line">gcc -fstack-protector -o test test.c <span class="comment">//启用堆栈保护，不过只为局部变量中含有 char 数组的函数插入保护代码</span></span><br><span class="line">gcc -fstack-protector-all -o test test.c <span class="comment">//启用堆栈保护，为所有函数插入保护代码</span></span><br><span class="line">-fno-<span class="built_in">stack</span>-protector /-fstack-protector / -fstack-protector-all (关闭 / 开启 / 全开启)</span><br></pre></td></tr></table></figure>
+
+<p>Canary所在的位置和GCC编译器以及系统有关:<br>下面以Ubuntu系统举例:<br><img src="/../picture/pwn1.1.3/aaa.png"><br><code>注意</code>:前面的文章中我制作的图片都是使用<code>上面为高地址，下面为低地址</code>(因为初学者都相对自然的认为<code>上高下低</code>),但是此处我采用了<code>上低下高</code>。因为在后续我们做PWN题目的时候使用gdb调试,在gdb中查看<code>栈</code>，栈中的内容是<code>上低下高</code>的，图中所看到的情况也符合我们即将在gdb中看到的情况。所以为了让大家能够适应后续的gdb调试这里使用了<code>上低下高</code>，</p>
+<p>所以总的来说,对于Ubuntu来说，32为程序的Canary一般在 <code>ebp - 0xc</code> 的地方(32位的一格是0x4，也就是在ebp的上面3格)。而 64位的Canary则是在 <code>rbp - 0x8</code> 的位置(64位的一格是0x8，也就是在ebp的上面1格，他们相邻)</p>
+<h4 id="2-NX保护"><a href="#2-NX保护" class="headerlink" title="2.NX保护"></a>2.NX保护</h4><p><code>NX</code>即No-eXecute（不可执行）的意思，NX（DEP）的基本原理是将数据所在内存页标识为不可执行。</p>
+<p>这个保护有什么用呢?<br>我们都知道程序分为<code>代码段</code>和<code>数据段</code>，代码段用于执行，数据段用于存储数据，那么我们可以在数据段写入一些代码吗?答案是可以的，但是程序执行什么由ip指针说了算，ip指哪就运行什么。那如果我们在数据段写入我们想要的代码，然后再想个办法把ip指针骗过来了呢?<br>这样就像银行卡里的数字自己可以改一样，非常逆天(后续我们会学到，这种逆天的攻击方法叫ret2shellcode,但是开启NX之后几乎就无效了)。<br>所以有了NX保护，它的任务就是让<code>数据段</code>坚决不能执行(在<code>Ubuntu20</code>版本之后，系统默认了数据段就是无法执行的，哪怕没有开启<code>NX</code>也不能执行数据段里面的东西)</p>
+<p>GCC开启和关闭NX保护：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gcc -o test test.c <span class="comment">// 默认情况下，开启NX保护</span></span><br><span class="line">gcc -z execstack -o test test.c <span class="comment">// 禁用NX保护</span></span><br><span class="line">gcc -z noexecstack -o test test.c <span class="comment">// 开启NX保护</span></span><br><span class="line">-z execstack / -z <span class="title function_">noexecstack</span> <span class="params">(关闭 / 开启)</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-PIE与ASLR"><a href="#3-PIE与ASLR" class="headerlink" title="3.PIE与ASLR"></a>3.PIE与ASLR</h4><p>从我个人认为PIE与ASLR是非常麻烦的保护,它们的作用是让<code>地址空间分布随机化</code></p>
+<p><strong>ASLR（libc地址随机化）</strong><br><code>ASLR</code>（Address Space Layout Randomization）是一种操作系统级别的安全保护机制，旨在增加软件系统的安全性。它通过随机化程序在内存中的布局，使得攻击者难以准确地确定关键代码和数据的位置，从而增加了利用软件漏洞进行攻击的难度。 <code>开启不同等级会有不同的效果</code>：</p>
+<ol>
+<li><code>内存布局随机化</code>： ASLR的主要目标是随机化程序的内存布局。在传统的内存布局中，不同的库和模块通常会在固定的内存位置上加载，攻击者可以利用这种可预测性来定位和利用漏洞。 ASLR通过随机化这些模块的加载地址，使得攻击者无法准确地确定内存中的关键数据结构和 代码的位置。 </li>
+<li><code>地址空间范围的随机化</code>： ASLR还会随机化进程的地址空间范围。在<code>传统的地址空间</code>中，栈、 堆、代码段和数据段通常会被<code>分配到固定的地址</code>范围中。ASLR会随机选择地址空间的起始位置和大小，从而使得这些重要的内存区域在每次运行时都有不同的位置。 </li>
+<li><code>随机偏移量</code>： ASLR会引入随机偏移量，将程序和模块在内存中的相对位置随机化。这意味着每个模块的实际地址是相对于一个随机基址偏移的，而不是绝对地址。攻击者需要在运行时发现这些偏移量，才能准确地定位和利用漏洞。</li>
+<li><code>堆和栈随机化</code>： ASLR也会对堆和栈进行随机化。堆随机化会在每次分配内存时选择不同的起 始地址，使得攻击者无法准确地预测堆上对象的位置。栈随机化会随机选择栈帧的起始位置， 使得攻击者无法轻易地覆盖返回地址或控制程序流程。</li>
+</ol>
+<p>和PIE不同，PIE用于随机化代码段和数据段，ASLR用于将libc库以及堆栈的地址随机化。而ASLR是Linux系统本身提供的保护机制。<br>Linux下的ASLR分为三个级别，0,1,2</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>：就是关闭ASLR，没有随机化，堆栈地址每次都相同，并且libc.so的每次地址也都相同</span><br><span class="line"><span class="number">1</span>：就是普通ASLR，mmap基地址、栈基地址、.so加载地址都将被随机化，但是堆并没有被随机化</span><br><span class="line"><span class="number">2</span>：就是增强ASLR，比起<span class="number">1</span>增加了堆随机化</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可以查看Linux系统里面ASLR的强度等级</span></span><br><span class="line">cat /proc/sys/kernel/randomize_va_space</span><br><span class="line"><span class="comment">// 可以改变ASLR等级,可能会遇到权限问题</span></span><br><span class="line">echo <span class="number">0</span> &gt; /proc/sys/kernel/randomize_va_space</span><br><span class="line"><span class="comment">// 如果遇到权限问题，可以su root之后再执行</span></span><br><span class="line"><span class="comment">// 或者尝试下面这两条指令</span></span><br><span class="line">sudo -s echo <span class="number">0</span> &gt; /proc/sys/kernel/randomize_va_space</span><br><span class="line">sudo bash -c <span class="string">&#x27;echo 0 &gt; /proc/sys/kernel/randomize_va_space&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<p><strong>PIE</strong><br>PIE能够使得程序像共享库一样在主存的任何位置装载，在需要将程序编译成位置无关<br>开放后code与data会随着ASLR变化地址<br><code>IDA</code>以及<code>gdb</code>执行的时候就只能看到地址后面的<code>末尾三位数</code></p>
+<p>GCC开启和关闭PIE</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">gcc -o test test.c <span class="comment">// 默认情况下，不开启PIE</span></span><br><span class="line">gcc -fpie -pie -o test test.c <span class="comment">// 开启PIE，此时强度为1</span></span><br><span class="line">gcc -fPIE -pie -o test test.c <span class="comment">// 开启PIE，此时为最高强度2</span></span><br><span class="line">gcc -fpic -o test test.c <span class="comment">// 开启PIC，此时强度为1，不会开启PIE</span></span><br><span class="line">gcc -fPIC -o test test.c <span class="comment">// 开启PIC，此时为最高强度2，不会开启PIE</span></span><br><span class="line">-no-pie / -pie (关闭 / 开启)</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-RELRO"><a href="#4-RELRO" class="headerlink" title="4.RELRO"></a>4.RELRO</h4><p><code>Relocation Read-Only (RELRO)</code> 可以使程序某些部分成为只读的。<br>它分为两种：<code>Partial RELRO</code> 和 <code>Full RELRO</code>，即：部分RELRO 和 完全RELRO。</p>
+<p><code>部分RELRO</code> 是 GCC 的默认设置，几乎所有的二进制文件都至少使用部分RELRO。这样仅仅只能防止全局变量上的缓冲区溢出从而覆盖 GOT。</p>
+<p><code>完全RELRO</code> 使整个 GOT 只读，从而无法被覆盖，但这样会大大增加程序的启动时间，因为程序在启动之前需要解析所有的符号。</p>
+<hr>
+<p>在Linux系统安全领域数据可以写的存储区就会是攻击的目标，尤其是存储函数指针的区域。所以在安全防护的角度应尽量减少可写的存储区域</p>
+<p>RELRO会设置符号重定向表格为只读或者程序启动时就解析并绑定所有动态符号，从而减少对GOT表的攻击。如果RELRO为Partial RELRO，就说明对<code>GOT表</code>具有<code>写权限</code></p>
+<p>具体GOT和PLT表是什么，有什么用，将在ret2libc的前置章节中讲解</p>
+<hr>
+<blockquote>
+<p>主要用来保护重定位表段对应数据区域，默认可写<br><code>Partial RELRO</code>：.got不可写，got.plt可写<br><code>Full RELRO</code>：.got和got.plt不可写<br>got.plt可以简称为got表</p>
+</blockquote>
+<p>GCC开启和关闭RELRO</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gcc -o test test.c <span class="comment">// 默认情况下，是Partial RELRO</span></span><br><span class="line">gcc -z norelro -o test test.c <span class="comment">// 关闭，即No RELRO</span></span><br><span class="line">gcc -z lazy -o test test.c <span class="comment">// 部分开启，即Partial RELRO</span></span><br><span class="line">gcc -z now -o test test.c <span class="comment">// 全部开启</span></span><br><span class="line">-z norelro / -z lazy / -z <span class="title function_">now</span> <span class="params">(关闭 / 部分开启 / 完全开启)</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="5-fortify"><a href="#5-fortify" class="headerlink" title="5.fortify"></a>5.fortify</h4><p><code>fortify</code>是轻微的检查，用于检查是否存在缓冲区溢出的错误。适用于程序采用大量的字符串或者内存操作函数，如:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; <span class="built_in">memcpy</span>():</span><br><span class="line">	描述：<span class="type">void</span> *<span class="title function_">memcpy</span><span class="params">(<span class="type">void</span> *str1, <span class="type">const</span> <span class="type">void</span> *str2, <span class="type">size_t</span> n)</span></span><br><span class="line">    	 从存储区str2复制n个字符到存储区str1</span><br><span class="line">  参数：str1 -- 指向用于存储复制内容的目标数组，类型强制转换为 <span class="type">void</span>* 指针</span><br><span class="line">    	 str2 -- 指向要复制的数据源，类型强制转换为 <span class="type">void</span>* 指针</span><br><span class="line">    	 n -- 要被复制的字节数</span><br><span class="line">  返回值：该函数返回一个指向目标存储区 str1 的指针</span><br><span class="line">-----------------------------------------------------------------------</span><br><span class="line">&gt;&gt;&gt; <span class="title function_">memset</span><span class="params">()</span>:</span><br><span class="line">  描述：<span class="type">void</span> *<span class="title function_">memset</span><span class="params">(<span class="type">void</span> *str, <span class="type">int</span> c, <span class="type">size_t</span> n)</span></span><br><span class="line">    	 复制字符 c（一个无符号字符）到参数 str 所指向的字符串的前 n 个字符</span><br><span class="line">  参数：str -- 指向要填充的内存块</span><br><span class="line">    	 c -- 要被设置的值。该值以 <span class="type">int</span> 形式传递，但是函数在填充内存块时是使用该值的无符号字符形式</span><br><span class="line">    	 n -- 要被设置为该值的字节数</span><br><span class="line">  返回值：该值返回一个指向存储区 str 的指针</span><br><span class="line">-----------------------------------------------------------------------</span><br><span class="line">&gt;&gt;&gt; <span class="title function_">strcpy</span><span class="params">()</span>:</span><br><span class="line">  描述：<span class="type">char</span> *<span class="title function_">strcpy</span><span class="params">(<span class="type">char</span> *dest, <span class="type">const</span> <span class="type">char</span> *src)</span></span><br><span class="line">    	 把 src 所指向的字符串复制到 dest，容易出现溢出</span><br><span class="line">  参数：dest -- 指向用于存储复制内容的目标数组</span><br><span class="line">    	 src -- 要复制的字符串</span><br><span class="line">  返回值：该函数返回一个指向最终的目标字符串 dest 的指针</span><br><span class="line">-----------------------------------------------------------------------</span><br><span class="line">&gt;&gt;&gt; <span class="title function_">stpcpy</span><span class="params">()</span>:</span><br><span class="line">  描述：<span class="keyword">extern</span> <span class="type">char</span> *<span class="title function_">stpcpy</span><span class="params">(<span class="type">char</span> *dest,<span class="type">char</span> *src)</span></span><br><span class="line">    	 把src所指由<span class="literal">NULL</span>借宿的字符串复制到dest所指的数组中</span><br><span class="line">  说明：src和dest所指内存区域不可以重叠且dest必须有足够的空间来容纳src的字符串返回指向dest结尾处字符（<span class="literal">NULL</span>）的指针	 </span><br><span class="line">  返回值：</span><br><span class="line">-----------------------------------------------------------------------</span><br><span class="line">&gt;&gt;&gt; <span class="title function_">strncpy</span><span class="params">()</span>:</span><br><span class="line">  描述：<span class="type">char</span> *<span class="title function_">strncpy</span><span class="params">(<span class="type">char</span> *dest, <span class="type">const</span> <span class="type">char</span> *src, <span class="type">size_t</span> n)</span></span><br><span class="line">    	 把 src 所指向的字符串复制到 dest，最多复制 n 个字符。当 src 的长度小于 n 时，dest 的剩余部分将用空字节填充</span><br><span class="line">  参数：dest -- 指向用于存储复制内容的目标数组</span><br><span class="line">    	 src -- 要复制的字符串</span><br><span class="line">    	 n -- 要从源中复制的字符数</span><br><span class="line">  返回值：该函数返回最终复制的字符串</span><br><span class="line">-----------------------------------------------------------------------</span><br><span class="line">&gt;&gt;&gt; <span class="title function_">strcat</span><span class="params">()</span>:</span><br><span class="line">  描述：<span class="type">char</span> *<span class="title function_">strcat</span><span class="params">(<span class="type">char</span> *dest, <span class="type">const</span> <span class="type">char</span> *src)</span></span><br><span class="line">    	 把 src 所指向的字符串追加到 dest 所指向的字符串的结尾</span><br><span class="line">  参数：dest -- 指向目标数组，该数组包含了一个 C 字符串，且足够容纳追加后的字符串</span><br><span class="line">    	 src -- 指向要追加的字符串，该字符串不会覆盖目标字符串</span><br><span class="line">  返回值：</span><br><span class="line">-----------------------------------------------------------------------</span><br><span class="line">&gt;&gt;&gt; <span class="title function_">strncat</span><span class="params">()</span>:</span><br><span class="line">  描述：<span class="type">char</span> *<span class="title function_">strncat</span><span class="params">(<span class="type">char</span> *dest, <span class="type">const</span> <span class="type">char</span> *src, <span class="type">size_t</span> n)</span></span><br><span class="line">    	 把 src 所指向的字符串追加到 dest 所指向的字符串的结尾，直到 n 字符长度为止</span><br><span class="line">  参数：dest -- 指向目标数组，该数组包含了一个 C 字符串，且足够容纳追加后的字符串，包括额外的空字符</span><br><span class="line">    	 src -- 要追加的字符串</span><br><span class="line">    	 n -- 要追加的最大字符数</span><br><span class="line">  返回值：该函数返回一个指向最终的目标字符串 dest 的指针</span><br><span class="line">-----------------------------------------------------------------------</span><br><span class="line">&gt;&gt;&gt; <span class="title function_">sprintf</span><span class="params">()</span>:</span><br><span class="line">  描述：<span class="title function_">sprintf</span><span class="params">(format,arg1,arg2,arg++)</span></span><br><span class="line">    	 arg1、arg2、++ 参数将被插入到主字符串中的百分号（%）符号处。该函数是逐步执行的。在第一个 % 符号处，插入 arg1，在第二个 % 符号处，插入 arg2，依此类推</span><br><span class="line">  参数：format -- 必需。规定字符串以及如何格式化其中的变量</span><br><span class="line">    	 arg1 -- 必需。规定插到 format 字符串中第一个 % 符号处的参</span><br><span class="line">    	 arg2 -- 可选。规定插到 format 字符串中第二个 % 符号处的参数</span><br><span class="line">    	 arg++ -- 可选。规定插到 format 字符串中第三、四等等 % 符号处的参数</span><br><span class="line">  返回值：返回已格式化的字符串</span><br><span class="line">-----------------------------------------------------------------------</span><br><span class="line">&gt;&gt;&gt; <span class="title function_">snprintf</span><span class="params">()</span>:</span><br><span class="line">  描述：<span class="type">int</span> <span class="title function_">snprintf</span> <span class="params">( <span class="type">char</span> * str, <span class="type">size_t</span> size, <span class="type">const</span> <span class="type">char</span> * format, ... )</span></span><br><span class="line">    	 设将可变参数<span class="params">(...)</span>按照 format 格式化成字符串，并将字符串复制到 str 中，size 为要写入的字符的最大数目，超过 size 会被截断</span><br><span class="line">  参数：str -- 目标字符串</span><br><span class="line">    	 size -- 拷贝字节数<span class="params">(Bytes)</span>如果格式化后的字符串长度大于 size</span><br><span class="line">    	 format -- 格式化成字符串</span><br><span class="line">  返回值：如果格式化后的字符串长度小于等于 size，则会把字符串全部复制到 str 中，并给其后添加一个字符串结束符 \0。 如果格式化后的字符串长度大于 size，超过 size 的部分会被截断，只将其中的 <span class="params">(size<span class="number">-1</span>)</span> 个字符复制到 str 中，并给其后添加一个字符串结束符 \0，返回值为欲写入的字符串长度</span><br><span class="line">-----------------------------------------------------------------------</span><br><span class="line">&gt;&gt;&gt; <span class="title function_">vsprintf</span><span class="params">()</span>:</span><br><span class="line">  描述：<span class="title function_">vsprintf</span><span class="params">(format,argarray)</span> </span><br><span class="line">    	 与 <span class="title function_">sprintf</span><span class="params">()</span> 不同，<span class="title function_">vsprintf</span><span class="params">()</span> 中的参数位于数组中。数组元素将被插入到主字符串中的百分号（%）符号处。该函数是逐步执行的</span><br><span class="line">  参数：format -- 必需。规定字符串以及如何格式化其中的变量</span><br><span class="line">    	 argarray -- 必需。带有参数的一个数组，这些参数会被插到 format 字符串中的 % 符号处</span><br><span class="line">  返回值：以格式化字符串的形式返回数组值</span><br><span class="line">-----------------------------------------------------------------------</span><br><span class="line">&gt;&gt;&gt; <span class="title function_">vsnprintf</span><span class="params">()</span>:</span><br><span class="line">  描述：<span class="type">int</span> <span class="title function_">vsnprintf</span> <span class="params">(<span class="type">char</span> * s, <span class="type">size_t</span> n, <span class="type">const</span> <span class="type">char</span> * format, va_list arg )</span></span><br><span class="line">    	 将格式化数据从可变参数列表写入大小缓冲区</span><br><span class="line">如果在<span class="built_in">printf</span>上使用格式，则使用相同的文本组成字符串，但使用由arg标识的变量参数列表中的元素而不是附加的函数参数，并将结果内容作为C字符串存储在s指向的缓冲区中 （以n为最大缓冲区容量来填充）。如果结果字符串的长度超过了n-1个字符，则剩余的字符将被丢弃并且不被存储，而是被计算为函数返回的值。在内部，函数从arg标识的列表中检索参数，就好像va_arg被使用了一样，因此arg的状态很可能被调用所改变。在任何情况下，arg都应该在调用之前的某个时刻由va_start初始化，并且在调用之后的某个时刻，预计会由va_end释放</span><br><span class="line">  参数：s -- 指向存储结果C字符串的缓冲区的指针，缓冲区应至少有n个字符的大小</span><br><span class="line">    	 n -- 在缓冲区中使用的最大字节数，生成的字符串的长度至多为n-1，为额外的终止空字符留下空，<span class="type">size_t</span>是一个无符号整数类型</span><br><span class="line">    	 format -- 包含格式字符串的C字符串，其格式字符串与<span class="built_in">printf</span>中的格式相同</span><br><span class="line">     	 arg -- 标识使用va_start初始化的变量参数列表的值</span><br><span class="line">  返回值：如果n足够大，则会写入的字符数，不包括终止空字符。如果发生编码错误，则返回负数。注意，只有当这个返回值是非负值且小于n时，字符串才被完全写入</span><br><span class="line">-----------------------------------------------------------------------</span><br><span class="line">&gt;&gt;&gt; <span class="title function_">gets</span><span class="params">()</span>:</span><br><span class="line">  描述：<span class="type">char</span> *<span class="title function_">gets</span><span class="params">(<span class="type">char</span> *str)</span></span><br><span class="line">    	 从标准输入 <span class="built_in">stdin</span> 读取一行，并把它存储在 str 所指向的字符串中。当读取到换行符时，或者到达文件末尾时，它会停止，具体视情况而定</span><br><span class="line">  参数：str -- 这是指向一个字符数组的指针，该数组存储了 C 字符串</span><br><span class="line">  返回值：如果成功，该函数返回 str。如果发生错误或者到达文件末尾时还未读取任何字符，则返回 <span class="literal">NULL</span> 	</span><br></pre></td></tr></table></figure>
+
+<p>GCC开启和关闭fortify：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gcc -D_FORTIFY_SOURCE=<span class="number">1</span>  仅仅只在编译时进行检查（尤其是<span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span>这种文件头）</span></span><br><span class="line">gcc -D_FORTIFY_SOURCE=<span class="number">2</span>  程序执行时也会进行检查（如果检查到缓冲区溢出，就会终止程序）</span><br></pre></td></tr></table></figure>
+<p>在-D_FORTIFY_SOURCE&#x3D;2时，通过对数组大小来判断替换strcpy、memcpy、memset等函数名，从而达到防止缓冲区溢出的作用</p>
+<p>参考文献:<br><a target="_blank" rel="noopener" href="https://hollk.blog.csdn.net/article/details/105913071?spm=1001.2014.3001.5502">栈保护机制-CSDN博客</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44932880/article/details/104092620">linux elf保护机制_-no-pie-CSDN博客</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/RChaos/article/details/104344276">Pwn的常见保护介绍_pwn题打开nx保护有什么用吗-CSDN博客</a><br><a target="_blank" rel="noopener" href="https://www.yuque.com/cyberangel/rg9gdm/yfrste">PWN入门（1-1-3）-Linux ELF文件保护机制 (yuque.com)</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">XiDP</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2025/06/12/Linux%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E5%92%8CELF%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4/">http://example.com/2025/06/12/Linux%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E5%92%8CELF%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">XiDP</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/Qhead.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/06/12/PWN%E5%85%A5%E9%97%A8%E6%89%8B%E5%86%8C/" title="PWN入门手册"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">PWN入门手册</div></div><div class="info-2"><div class="info-item-1">什么是 PWN？PWN 是黑客术语中的俚语，是指攻破设备或者系统。它的发音类似于“砰”，当然也有师傅把它叫作“胖”。PWN 的目标是获取系统的控制权或执行未经授权的操作。 如何入门 PWN前置知识 C 语言  学习内容： 程序结构和基础语法 数据类型、分支语句（如 if、switch）和循环（如 for、while） 指针和结构体   学习资源： 浙江大学翁恺教你 C 语言程序设计 C 语言教程 | 菜鸟教程     Python 语言  学习内容： 程序结构和基础语法 循环（for、while）和异常处理（如 try）   学习资源： Python3 教程 | 菜鸟教程 超基础 Python 课程     建议：掌握 C 语言后，可以直接用文章进行 Python 的学习，进度会更快。    汇编语言  常见类型： x86 汇编：Intel 和 AMD 的处理器架构 ARM 汇编：用于移动设备 MIPS 汇编：用于嵌入式系统 PowerPC 汇编：曾用于苹果计算机 RISC-V...</div></div></div></a><a class="pagination-related" href="/2025/06/12/C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/" title="C程序调用过程与函数栈变化（32位 vs 64位）(Intel)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">C程序调用过程与函数栈变化（32位 vs 64位）(Intel)</div></div><div class="info-2"><div class="info-item-1">本文使用Intel 的32位为例子进行举例。64位本质上和32位类似，主要区别在于函数参数的调用方式，文章结尾会简要提及。 重新回顾一下栈pop和push指令 12// 将0x50的压入栈push 0x50  1234// 将esp指向的数据放入指定的寄存器中pop 寄存器名字比如 ：pop eax执行之后eax的值就变成了0x50  栈帧是什么?栈帧，也就是stack frame，其本质就是一种栈，只是这种栈专门用于保存函数调用过程中的各种信息（参数，返回地址，本地变量等）。栈帧有栈顶和栈底之分，其中栈顶的地址最低，栈底的地址最高，SP(栈指针)就是一直指向栈顶的。在x86-32bit中，我们用 ebp 指向栈底，也就是基址指针；用 esp 指向栈顶，也就是栈指针。下面是一个栈帧的示意图： 1234567891011// 这是一段有问题的C语言代码，仅仅只是用作C语言函数调用流程的介绍，为了方便读者理解#include &lt;stdio.h&gt;void func(参数1, 参数2 ,参数3 ) &#123;	&#125;int main() &#123;   ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/Qhead.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">XiDP</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/XiDP0"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80Linux%E6%8C%87%E4%BB%A4"><span class="toc-number">1.</span> <span class="toc-text">基础Linux指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ELF%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4"><span class="toc-number">2.</span> <span class="toc-text">ELF文件保护</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-Canary"><span class="toc-number">2.1.</span> <span class="toc-text">1.Canary</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-NX%E4%BF%9D%E6%8A%A4"><span class="toc-number">2.2.</span> <span class="toc-text">2.NX保护</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-PIE%E4%B8%8EASLR"><span class="toc-number">2.3.</span> <span class="toc-text">3.PIE与ASLR</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-RELRO"><span class="toc-number">2.4.</span> <span class="toc-text">4.RELRO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-fortify"><span class="toc-number">2.5.</span> <span class="toc-text">5.fortify</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20ISCC%20%E6%93%82%E5%8F%B0%E8%B5%9BPwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 ISCC 擂台赛Pwn-wp(含附件)">2025 ISCC 擂台赛Pwn-wp(含附件)</a><time datetime="2025-06-13T10:56:07.285Z" title="发表于 2025-06-13 18:56:07">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20ISCC%20%E7%BB%83%E6%AD%A6%E8%B5%9BPwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 ISCC 练武赛Pwn-wp(含附件)">2025 ISCC 练武赛Pwn-wp(含附件)</a><time datetime="2025-06-13T10:47:28.963Z" title="发表于 2025-06-13 18:47:28">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20UCSCCTF%20Pwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 UCSCCTF Pwn-wp(含附件)">2025 UCSCCTF Pwn-wp(含附件)</a><time datetime="2025-06-13T05:39:29.083Z" title="发表于 2025-06-13 13:39:29">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20XYCTF%20Pwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 XYCTF Pwn-wp(含附件)">2025 XYCTF Pwn-wp(含附件)</a><time datetime="2025-06-13T05:27:37.342Z" title="发表于 2025-06-13 13:27:37">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/1/" title="如何搜索下载libc以及其对应的ld文件">如何搜索下载libc以及其对应的ld文件</a><time datetime="2025-06-13T05:17:15.335Z" title="发表于 2025-06-13 13:17:15">2025-06-13</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/yu2.png);"><div id="footer-wrap"></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div></div></body></html>

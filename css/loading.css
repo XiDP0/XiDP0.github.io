@@ -1,0 +1,3 @@
+.loading-img {
+  background: url(/img/Qhead.png) no-repeat center/cover !important; /* 缺失此关键配置 */
+}

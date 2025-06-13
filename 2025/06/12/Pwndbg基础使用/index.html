@@ -1,0 +1,251 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Pwndbg基础使用 | XiDP</title><meta name="author" content="XiDP"><meta name="copyright" content="XiDP"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="什么是pwndbg?它是gdb的一个插件，增加了许多功能，来帮助pwn手可以快速寻找到所需要的信息，除了pwndbg之外还有peda、gef等工具可以用来协助进行调试。 如何给pwndbg分屏?12vim ~/.gdbinitset context-output /dev/pts/2 #..."><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Pwndbg基础使用",
+  "url": "http://example.com/2025/06/12/Pwndbg%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/",
+  "image": "http://example.com/img/Qhead.png",
+  "datePublished": "2025-06-12T09:27:37.568Z",
+  "dateModified": "2024-12-22T14:42:38.570Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "XiDP",
+      "url": "http://example.com/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/Qhead.png"><link rel="canonical" href="http://example.com/2025/06/12/Pwndbg%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Pwndbg基础使用',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/loading.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (false) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="/css/progress_bar.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/Qhead.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/yu2.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">XiDP</span></a><a class="nav-page-title" href="/"><span class="site-name">Pwndbg基础使用</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Pwndbg基础使用</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-06-12T09:27:37.568Z" title="发表于 2025-06-12 17:27:37">2025-06-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-12-22T14:42:38.570Z" title="更新于 2024-12-22 22:42:38">2024-12-22</time></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:100,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2024-12-22 22:42:38&quot;}" hidden></div><h3 id="什么是pwndbg"><a href="#什么是pwndbg" class="headerlink" title="什么是pwndbg?"></a>什么是pwndbg?</h3><p>它是<code>gdb</code>的一个插件，增加了许多功能，来帮助pwn手可以快速寻找到所需要的信息，除了<code>pwndbg</code>之外还有<code>peda</code>、<code>gef</code>等工具可以用来协助进行调试。</p>
+<h3 id="如何给pwndbg分屏"><a href="#如何给pwndbg分屏" class="headerlink" title="如何给pwndbg分屏?"></a>如何给pwndbg分屏?</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vim ~/.gdbinit</span><br><span class="line"><span class="built_in">set</span> context-output /dev/pts/<span class="number">2</span> # 这里修改成<span class="number">2</span>，那么就会在第二个终端显示信息</span><br></pre></td></tr></table></figure>
+
+<h3 id="pwndbg的基础操作"><a href="#pwndbg的基础操作" class="headerlink" title="pwndbg的基础操作:"></a>pwndbg的基础操作:</h3><p>启动调试:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gdb ./文件名</span><br><span class="line">比如:gdb ./pwn</span><br></pre></td></tr></table></figure>
+<p>如果我们已经成功安装了<code>pwndbg</code>，那么打开<code>gdb</code>之后会显示<code>pwndbg&gt;</code><br>这样的提示符号，否则是<code>gdb&gt;</code></p>
+<p>基础操作:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; start </span><br><span class="line"># 开始运行，会停留在start函数上(start函数是main函数之前的一个函数) </span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; q </span><br><span class="line"># 退出调试</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; r </span><br><span class="line"># 从头运行程序直到遇到断点,没有断点则会一直运行到结束</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; c </span><br><span class="line"># 继续执行程序直到遇到断点，没有断点则会一直运行到结束</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; n </span><br><span class="line"># 单步步过，n不会进入一个小函数</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; ni </span><br><span class="line"># 常用，同n，但是是汇编层面的一步</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; s </span><br><span class="line"># 步入，比如遇到一个call 什么什么函数，s会进入看看怎么个事 </span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; si </span><br><span class="line"># 常用，同s，但是是汇编层面的一步</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; fini </span><br><span class="line"># 快速运行结束当前函数</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; context </span><br><span class="line"># 重新打印页面信息</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; b function_name</span><br><span class="line"># 比如: b read 在read函数上下断点，运行到read函数的时候就会停止</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; b *(&amp;function_name+offset)</span><br><span class="line"># 比如: b *(&amp;read + <span class="number">10</span>) 在read函数+<span class="number">10</span>的地址上下断点，运行到这个地址的时候就会停止</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; b *<span class="number">0xadd</span>r</span><br><span class="line"># 比如: b *<span class="number">0x408010</span> 那么程序运行到<span class="number">0x408010</span>这个地址的时候就会停止</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; i b</span><br><span class="line"># 查看断点信息，哪些地方打了断点</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; delete &lt;断点序号&gt;</span><br><span class="line"># 删除断点序号对应的断点,单独一个delete会删除所有断点</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; i r</span><br><span class="line"># 查看所有寄存器中存储的数据</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; i r &lt;registers&gt;</span><br><span class="line"># 查看具体某一个寄存器的值 比如: pwndbg&gt; i r rax</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; <span class="built_in">stack</span> &lt;<span class="type">int</span>&gt;</span><br><span class="line"># 查看栈中的信息，具体数量填在<span class="built_in">stack</span>后面，比如: <span class="built_in">stack</span> <span class="number">50</span></span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; search &lt;<span class="built_in">string</span>&gt;</span><br><span class="line"># 在程序中查看字符串，可以查看自己输入的信息被存在什么地方了</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; <span class="built_in">set</span> $&lt;rigister&gt; = &lt;<span class="type">int</span>&gt;</span><br><span class="line"># 使用<span class="built_in">set</span>来给寄存器设置自定义的值</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; bt</span><br><span class="line"># 查看我们当前这个函数的上一个函数是什么</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; vmmap</span><br><span class="line"># 查看程序各个段的位置以及权限等信息</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; elf</span><br><span class="line"># 查看elf文件信息</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; bins</span><br><span class="line"># 查看释放的堆块</span><br><span class="line">**************************************************</span><br><span class="line">pwndbg&gt; heap</span><br><span class="line"># 查看正在使用的堆块</span><br><span class="line">**************************************************</span><br></pre></td></tr></table></figure>
+
+<h3 id="x命令和p命令的使用"><a href="#x命令和p命令的使用" class="headerlink" title="x命令和p命令的使用:"></a>x命令和p命令的使用:</h3><h4 id="1-x-命令"><a href="#1-x-命令" class="headerlink" title="1. x 命令"></a>1. <code>x</code> 命令</h4><p><code>x</code> 命令用于查看内存中的数据。它可以显示指定地址或变量所占内存的内容。其基本语法如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x/[n][f][u] addr</span><br></pre></td></tr></table></figure>
+<h5 id="参数说明："><a href="#参数说明：" class="headerlink" title="参数说明："></a>参数说明：</h5><ul>
+<li><code>n</code>：可选，表示要显示的单元数量，默认为1。</li>
+<li><code>f</code>：可选，表示显示的格式，常见格式包括：<ul>
+<li><code>d</code>：十进制整数</li>
+<li><code>x</code>：十六进制</li>
+<li><code>o</code>：八进制</li>
+<li><code>c</code>：字符</li>
+<li><code>f</code>：浮点数</li>
+</ul>
+</li>
+<li><code>u</code>：可选，表示数据单位，常见单位包括：<ul>
+<li><code>b</code>：字节</li>
+<li><code>h</code>：半字（2 字节）</li>
+<li><code>w</code>：字（4 字节）</li>
+<li><code>g</code>：巨字（8 字节）</li>
+</ul>
+</li>
+</ul>
+<h5 id="示例："><a href="#示例：" class="headerlink" title="示例："></a>示例：</h5><ol>
+<li><p><strong>查看内存地址的内容</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x/<span class="number">10</span>x <span class="number">0x7fffffffe000</span></span><br></pre></td></tr></table></figure>
+<p>以上命令将以十六进制格式显示从 <code>0x7fffffffe000</code> 开始的10个字节的内容。</p>
+</li>
+<li><p><strong>查看变量的内容</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x/<span class="number">4</span>d my_array</span><br></pre></td></tr></table></figure>
+<p>该命令将以十进制格式查看 <code>my_array</code> 数组的前4个元素。</p>
+</li>
+</ol>
+<h4 id="2-p-命令"><a href="#2-p-命令" class="headerlink" title="2. p 命令"></a>2. <code>p</code> 命令</h4><p><code>p</code> 命令用于打印变量的值，通常用于查看变量的当前状态。其基本语法如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p [expression]</span><br></pre></td></tr></table></figure>
+<h5 id="参数说明：-1"><a href="#参数说明：-1" class="headerlink" title="参数说明："></a>参数说明：</h5><ul>
+<li><code>expression</code>：要打印的变量名或表达式。</li>
+</ul>
+<h5 id="示例：-1"><a href="#示例：-1" class="headerlink" title="示例："></a>示例：</h5><ol>
+<li><p><strong>打印简单变量</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p my_variable</span><br></pre></td></tr></table></figure>
+<p>该命令将输出 <code>my_variable</code> 的当前值。</p>
+</li>
+<li><p><strong>打印结构体成员</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p my_struct.member</span><br></pre></td></tr></table></figure>
+<p>此命令将输出结构体 <code>my_struct</code> 中 <code>member</code> 的值。</p>
+</li>
+<li><p><strong>打印表达式的值</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p my_variable + <span class="number">10</span></span><br></pre></td></tr></table></figure>
+<p>该命令将输出 <code>my_variable</code> 的值加上10的结果</p>
+</li>
+</ol>
+<h4 id="3-常见用法示例"><a href="#3-常见用法示例" class="headerlink" title="3. 常见用法示例"></a>3. 常见用法示例</h4><p><strong>3.1 打印变量地址</strong></p>
+<p>使用 <code>&amp;</code> 操作符可以打印变量的地址：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p &amp;my_variable</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>3.2 观察数组</strong></p>
+<p>结合 <code>p</code> 和 <code>x</code> 命令，可以更好地观察数组内容：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x/<span class="number">10</span>d my_array p my_array[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>3.3 打印指针指向的值</strong></p>
+<p>如果打印指针指向的内容，可以使用 <code>*</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p *my_pointer</span><br></pre></td></tr></table></figure>
+
+
+<p>在 <code>gdb</code> 中是可以设置地址随机化开关，需要的时候可以关闭，来帮助我们调试</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; <span class="built_in">set</span> disable-randomization on	# 开</span><br><span class="line">pwndbg&gt; <span class="built_in">set</span> disable-randomization off	# 关</span><br><span class="line">pwndbg&gt; show disable-randomization		# 查</span><br></pre></td></tr></table></figure>
+
+
+<p>参考文献:<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ve1kcon/p/17812420.html">gdb调试入门指北 - ve1kcon - 博客园 (cnblogs.com)</a><br><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1QW4y1c7Ux/?spm_id_from=333.337.search-card.all.click&vd_source=4276fc17276ff66d44a2713a1ca58c94">pwn技术分享——pwndbg分屏显示设置_哔哩哔哩_bilibili</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">XiDP</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2025/06/12/Pwndbg%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/">http://example.com/2025/06/12/Pwndbg%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">XiDP</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/Qhead.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/06/12/pwntools%E5%BA%93%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" title="pwntools库的基本使用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">pwntools库的基本使用</div></div><div class="info-2"><div class="info-item-1">啥是pwntools?Pwntools 是一个用于漏洞利用和二进制分析的 Python 库，广泛应用于安全研究、渗透测试和竞争性编程（如 CTF，Capture The Flag）中。它为用户提供了一套强大的工具和功能，以简化与二进制文件的交互、网络通信以及各种常见任务的执行。 简而言之，pwntools可以说是pwn手必备的工具，它帮助pwn手连接远程服务器，发送信息，接收信息，以及提供了很多工具来帮助pwn手快速攻克题目 如何安装pwntools?按照以下流程在python3中安装pwntools 1234&gt;&gt;&gt;git clone https://github.com/Gallopsled/pwntools.git&gt;&gt;&gt;sudo apt-get install python3 python3-pip python3-dev git libssl-dev libffi-dev build-essential&gt;&gt;&gt;python3 -m pip install --upgrade pip&gt;&gt;&gt;python3...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/Qhead.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">XiDP</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/XiDP0"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFpwndbg"><span class="toc-number">1.</span> <span class="toc-text">什么是pwndbg?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E7%BB%99pwndbg%E5%88%86%E5%B1%8F"><span class="toc-number">2.</span> <span class="toc-text">如何给pwndbg分屏?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pwndbg%E7%9A%84%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C"><span class="toc-number">3.</span> <span class="toc-text">pwndbg的基础操作:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#x%E5%91%BD%E4%BB%A4%E5%92%8Cp%E5%91%BD%E4%BB%A4%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">4.</span> <span class="toc-text">x命令和p命令的使用:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-x-%E5%91%BD%E4%BB%A4"><span class="toc-number">4.1.</span> <span class="toc-text">1. x 命令</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E%EF%BC%9A"><span class="toc-number">4.1.1.</span> <span class="toc-text">参数说明：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A"><span class="toc-number">4.1.2.</span> <span class="toc-text">示例：</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-p-%E5%91%BD%E4%BB%A4"><span class="toc-number">4.2.</span> <span class="toc-text">2. p 命令</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E%EF%BC%9A-1"><span class="toc-number">4.2.1.</span> <span class="toc-text">参数说明：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A-1"><span class="toc-number">4.2.2.</span> <span class="toc-text">示例：</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%B8%B8%E8%A7%81%E7%94%A8%E6%B3%95%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.3.</span> <span class="toc-text">3. 常见用法示例</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20ISCC%20%E6%93%82%E5%8F%B0%E8%B5%9BPwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 ISCC 擂台赛Pwn-wp(含附件)">2025 ISCC 擂台赛Pwn-wp(含附件)</a><time datetime="2025-06-13T10:56:07.285Z" title="发表于 2025-06-13 18:56:07">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20ISCC%20%E7%BB%83%E6%AD%A6%E8%B5%9BPwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 ISCC 练武赛Pwn-wp(含附件)">2025 ISCC 练武赛Pwn-wp(含附件)</a><time datetime="2025-06-13T10:47:28.963Z" title="发表于 2025-06-13 18:47:28">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20UCSCCTF%20Pwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 UCSCCTF Pwn-wp(含附件)">2025 UCSCCTF Pwn-wp(含附件)</a><time datetime="2025-06-13T05:39:29.083Z" title="发表于 2025-06-13 13:39:29">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20XYCTF%20Pwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 XYCTF Pwn-wp(含附件)">2025 XYCTF Pwn-wp(含附件)</a><time datetime="2025-06-13T05:27:37.342Z" title="发表于 2025-06-13 13:27:37">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/1/" title="如何搜索下载libc以及其对应的ld文件">如何搜索下载libc以及其对应的ld文件</a><time datetime="2025-06-13T05:17:15.335Z" title="发表于 2025-06-13 13:17:15">2025-06-13</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/yu2.png);"><div id="footer-wrap"></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div></div></body></html>
