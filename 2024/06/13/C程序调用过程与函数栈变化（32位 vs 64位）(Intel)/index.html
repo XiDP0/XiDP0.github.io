@@ -1,0 +1,200 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>C程序调用过程与函数栈变化（32位 vs 64位）(Intel) | XiDP</title><meta name="author" content="XiDP"><meta name="copyright" content="XiDP"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本文使用Intel 的32位为例子进行举例。64位本质上和32位类似，主要区别在于函数参数的调用方式，文章结尾会简要提及。 重新回顾一下栈pop和push指令 12// 将0x50的压入栈push 0x50  1234// 将esp指向的数据放入指定的寄存器中pop 寄存器名字比如 ：pop..."><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "C程序调用过程与函数栈变化（32位 vs 64位）(Intel)",
+  "url": "http://example.com/2024/06/13/C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/",
+  "image": "http://example.com/img/Qhead.png",
+  "datePublished": "2024-06-12T16:00:00.000Z",
+  "dateModified": "2025-06-14T09:35:07.083Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "XiDP",
+      "url": "http://example.com/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/Qhead.png"><link rel="canonical" href="http://example.com/2024/06/13/C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":5,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'C程序调用过程与函数栈变化（32位 vs 64位）(Intel)',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/loading.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><div class="loading-img"></div><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (false) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="/css/progress_bar.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/Qhead.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/yu2.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">XiDP</span></a><a class="nav-page-title" href="/"><span class="site-name">C程序调用过程与函数栈变化（32位 vs 64位）(Intel)</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">C程序调用过程与函数栈变化（32位 vs 64位）(Intel)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-06-12T16:00:00.000Z" title="发表于 2024-06-13 00:00:00">2024-06-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-06-14T09:35:07.083Z" title="更新于 2025-06-14 17:35:07">2025-06-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Pwn/">Pwn</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">基础知识</a></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:100,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2025-06-14 17:35:07&quot;}" hidden></div><p>本文使用Intel 的32位为例子进行举例。64位本质上和32位类似，主要区别在于函数参数的调用方式，文章结尾会简要提及。</p>
+<p>重新回顾一下栈pop和push指令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 将0x50的压入栈</span><br><span class="line">push 0x50</span><br></pre></td></tr></table></figure>
+<p><img src="/../picture/pwn1.1.2/1.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 将esp指向的数据放入指定的寄存器中</span><br><span class="line">pop 寄存器名字</span><br><span class="line">比如 ：pop eax</span><br><span class="line">执行之后eax的值就变成了0x50</span><br></pre></td></tr></table></figure>
+<p><img src="/../picture/pwn1.1.2/2.png"></p>
+<h3 id="栈帧是什么"><a href="#栈帧是什么" class="headerlink" title="栈帧是什么?"></a>栈帧是什么?</h3><p><code>栈帧</code>，也就是stack frame，<code>其本质就是一种栈，只是这种栈专门用于保存函数调用过程中的各种信息（参数，返回地址，本地变量等）。栈帧有栈顶和栈底之分，其中栈顶的地址最低，栈底的地址最高，SP(栈指针)就是一直指向栈顶的。在x86-32bit中，我们用 ebp 指向栈底，也就是基址指针；用 esp 指向栈顶</code>，也就是栈指针。下面是一个栈帧的示意图：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这是一段有问题的C语言代码，仅仅只是用作C语言函数调用流程的介绍，为了方便读者理解</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">func</span><span class="params">(参数<span class="number">1</span>, 参数<span class="number">2</span> ,参数<span class="number">3</span> )</span> &#123;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    func(参数<span class="number">1</span>, 参数<span class="number">2</span> ,参数<span class="number">3</span> ) ;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/../picture/pwn1.1.2/3.png"><br>我们来详细分析一下上面的这个图和那一小段代码</p>
+<p>1.其实<code>main函数</code>只是我们作为程序员认为的程序的入口，实际上在<code>main函数</code>之前编译器还会添加很多函数比如<code>start函数</code>等等，所以<code>main函数</code>的栈帧之前还是有<code>栈帧</code>的</p>
+<p>2.最开始进入到main函数中，还没有执行<code>func(参数1, 参数2 ,参数3 ) ;</code>这条代码的时候<br><img src="/../picture/pwn1.1.2/4.png"></p>
+<p>3.<code>func(参数1, 参数2 ,参数3 ) ;</code> 这一条语句在汇编语言中会被翻译成为<code>call func</code><br>而在执行<code>call func</code>之前程序会执行一些<code>push指令</code>将func函数的<code>参数1,2,3</code>分别压入栈中<br>也就是<code>push 参数3</code>  <code>push 参数2</code>  <code>push 参数1</code> 这三条指令。执行完之后那么栈的内容会变成这样:<br><img src="/../picture/pwn1.1.2/5.png"></p>
+<p>4.然后参数到位了就可以执行<code>call func</code>了。<br>而<code>call func</code>这个指令其实可以近似理解成<code>push eip + jmp func_addr</code>这两个指令的组合<br>如下图执行<code>call func</code>前后栈和<code>eip指针</code>的情况<br><img src="/../picture/pwn1.1.2/6.png"><br>当然图中的代码段是我自己猜测的，不够准确，因为本文的目的是介绍函数调用的过程，所以没有考虑过多只是希望尽可能简单的将整个过程讲解清楚。</p>
+<p>5.我们已经知道了执行<code>call func</code>之后的<code>栈</code>和<code>eip</code>的位置<br>然后我们介绍一下每个函数开头的初始化<code>push ebp</code>和<code>mov ebp, esp</code><br>执行 <code>push ebp</code> 之后<br><img src="/../picture/pwn1.1.2/7.png"><br>执行 <code>mov ebp, esp</code> 之后<br><img src="/../picture/pwn1.1.2/8.png"><br>我们可以看到执行了<code>mov ebp, esp</code>之后<code>ebp指针</code>和<code>esp指针</code>指向了同一个地址，也就是<code>ebp 旧值</code> 所在的位置</p>
+<p>6.在上一步中我们的<code>esp</code>和<code>ebp</code>处于同一个位置，然后我们需要执行<code>sub esp, 0x??</code>(这里打?是因为我不知道具体应该减去多少),这个<code>sub指令</code>在这里的作用是将<code>esp</code>向下移动，用于开出新函数所需要的栈帧，执行之后如下图:<br><img src="/../picture/pwn1.1.2/9.png"></p>
+<p>7.最后我们直接来看func函数的最后一条<code>leave指令</code><br><code>leave指令</code>是<code>mov esp，ebp</code>和<code>pop ebp</code>的结合<br>我们来一条一条的看，先看 <code>mov esp, ebp</code> 执行之后的效果<br><img src="/../picture/pwn1.1.2/10.png"><br>这条指令会重新将<code>esp</code>和<code>ebp</code>移动到同一个位置<br>然后再来看 <code>pop ebp</code> 执行之后的效果<br><img src="/../picture/pwn1.1.2/11.png"><br>我们发现此时<code>ebp</code>回到<code>最初在main函数中它的位置</code>，而<code>esp</code>因为<code>pop</code>会向上移动一格位置，来到了<code>eip旧地址储存的位置</code>(这是后面会提到的栈溢出的关键部分)</p>
+<p>8.紧接着我们就会执行<code>ret指令</code>，这个<code>ret指令</code>的作用相当于 <code>pop eip</code> 也就是将<code>esp</code>现在指向的值，赋值给<code>eip</code>，执行完这个语句之后，我们来看看eip在哪。如图:<br><img src="/../picture/pwn1.1.2/12.png"><br>我们可以看到，<code>栈</code>一切都回到了<code>call func</code> 这个指令执行之前，只有<code>eip</code>的位置改变了，仿佛它从没来过…</p>
+<p>到此为止<code>32位程序</code>函数的调用以及栈的变化就结束了，可以得到一个结论就是<code>函数调用前后，栈内状况不变</code>。其实这非常好理解，因为在一个函数中调用另外一个函数当然不能影响原函数的运行，所以<code>栈</code>的设计做到了<code>用完就丢</code>。被调用函数结束后<code>esp</code>和<code>ebp</code>的位置都会回到<code>call</code>这个指令之前的状态，而<code>esp</code>和<code>ebp</code>之间的数据也都没有改变<br>上述结论在<code>64位</code>中同样适用，而<code>64位程序</code>和<code>32位程序</code>除了位数上不同，最大的不同就在于<code>64位程序</code>会优先将<code>被调用函数的参数</code>存放在寄存器中</p>
+<p>这是32位函数调用:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这是一段有问题的C语言代码，仅仅只是用作C语言函数调用流程的介绍，为了方便读者理解</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">func</span><span class="params">(参数<span class="number">1</span>, 参数<span class="number">2</span> ,参数<span class="number">3</span> )</span> &#123;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    func(参数<span class="number">1</span>, 参数<span class="number">2</span> ,参数<span class="number">3</span> ) ;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/../picture/pwn1.1.2/5.png"></p>
+<p>而这是64位函数调用:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这是一段有问题的C语言代码，仅仅只是用作C语言函数调用流程的介绍，为了方便读者理解</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">func</span><span class="params">(参数<span class="number">1</span>, 参数<span class="number">2</span> ,参数<span class="number">3</span>, 参数<span class="number">4</span>, 参数<span class="number">5</span> ,参数<span class="number">6</span>, 参数<span class="number">7</span>, 参数<span class="number">8</span>)</span> &#123;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    func(参数<span class="number">1</span>, 参数<span class="number">2</span> ,参数<span class="number">3</span>, 参数<span class="number">4</span>, 参数<span class="number">5</span> ,参数<span class="number">6</span>, 参数<span class="number">7</span>, 参数<span class="number">8</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在64位程序中，函数的参数会依次放入<code>rdi</code> <code>rsi</code> <code>rdx</code> <code>rcx</code> <code>r8</code> <code>r9</code> 这六个寄存器中，只有把这六个寄存器塞满后，才会<code>从右到左</code>依次放入<code>栈</code>中，像上面的代码，<code>func函数</code>有<code>8个参数</code>，那么就如图所示:<br><img src="/../picture/pwn1.1.2/13.png"><br><code>注意:64位所用的是位数更多更大的RSP和RBP</code></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>其实程序本身的流程并不困难，只是初学者对汇编语言的了解较少所以难以理解，如果对于文章内容难以理解，不妨寻找一些汇编语言的教程较为系统的了解汇编语言也许会有所帮助</p>
+<p>(制作图片用的是win11自带的画图工具，里面的字体大小不知道为什么调节不了，所以出现了字体很小的情况，<code>(。・＿・。)ﾉI’m sorry~</code>)</p>
+<p>参考文献:<br><a target="_blank" rel="noopener" href="https://www.yuque.com/cyberangel/rg9gdm/gcz7x2">PWN入门（1-1-1）-C函数调用过程原理及函数栈帧分析（Intel） (yuque.com)</a><br><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000007977460">linux - C函数调用过程原理及函数栈帧分析 - 编程之道 - SegmentFault 思否</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">XiDP</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2024/06/13/C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/">http://example.com/2024/06/13/C%E7%A8%8B%E5%BA%8F%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0%E6%A0%88%E5%8F%98%E5%8C%96%EF%BC%8832%E4%BD%8D%20vs%2064%E4%BD%8D%EF%BC%89(Intel)/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">XiDP</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Pwn/">Pwn</a><a class="post-meta__tags" href="/tags/C%E8%AF%AD%E8%A8%80/">C语言</a></div><div class="post-share"><div class="social-share" data-image="/img/Qhead.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/06/12/PWN%E5%85%A5%E9%97%A8%E6%89%8B%E5%86%8C/" title="PWN入门手册"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">PWN入门手册</div></div><div class="info-2"><div class="info-item-1">什么是 PWN？PWN 是黑客术语中的俚语，是指攻破设备或者系统。它的发音类似于“砰”，当然也有师傅把它叫作“胖”。PWN 的目标是获取系统的控制权或执行未经授权的操作。 如何入门 PWN前置知识 C 语言  学习内容： 程序结构和基础语法 数据类型、分支语句（如 if、switch）和循环（如 for、while） 指针和结构体   学习资源： 浙江大学翁恺教你 C 语言程序设计 C 语言教程 | 菜鸟教程     Python 语言  学习内容： 程序结构和基础语法 循环（for、while）和异常处理（如 try）   学习资源： Python3 教程 | 菜鸟教程 超基础 Python 课程     建议：掌握 C 语言后，可以直接用文章进行 Python 的学习，进度会更快。    汇编语言  常见类型： x86 汇编：Intel 和 AMD 的处理器架构 ARM 汇编：用于移动设备 MIPS 汇编：用于嵌入式系统 PowerPC 汇编：曾用于苹果计算机 RISC-V...</div></div></div></a><a class="pagination-related" href="/2024/06/13/Pwndbg%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/" title="Pwndbg基础使用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Pwndbg基础使用</div></div><div class="info-2"><div class="info-item-1">什么是pwndbg?它是gdb的一个插件，增加了许多功能，来帮助pwn手可以快速寻找到所需要的信息，除了pwndbg之外还有peda、gef等工具可以用来协助进行调试。 如何给pwndbg分屏?12vim ~/.gdbinitset context-output /dev/pts/2 # 这里修改成2，那么就会在第二个终端显示信息  pwndbg的基础操作:启动调试: 12gdb ./文件名比如:gdb ./pwn 如果我们已经成功安装了pwndbg，那么打开gdb之后会显示pwndbg&gt;这样的提示符号，否则是gdb&gt; 基础操作: 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576**************************************************pwndbg&gt; start #...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/06/13/2025%20ISCC%20%E6%93%82%E5%8F%B0%E8%B5%9BPwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 ISCC 擂台赛Pwn-wp(含附件)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-13</div><div class="info-item-2">2025 ISCC 擂台赛Pwn-wp(含附件)</div></div><div class="info-2"><div class="info-item-1">前言相比练武赛，擂台赛的题目指令还是要高很多的，里面都是师傅们用心出的题目，感觉创新度还是有的，但是为什么那么多vm pwn？？？ 通过网盘分享的文件：2025ISCC擂台赛Pwn全部附件.rar链接: https://pan.baidu.com/s/1y_zdFltMZmCxfxalS9EuCw?pwd=xidp 提取码: xidp 解出能力有限，很多方法可能并不是最优解，如果有师傅有更方便的方法愿意分享的话我会非非非常感谢的 call checksec查看程序保护，发现程序没有开启pie保护以及canary保护程序存在明显的栈溢出 直接溢出打ROP泄露libc地址然后执行system(&quot;/bin/sh&quot;)即可完整exp如下 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950from xidp import *#---------------------初始化----------------------------arch =...</div></div></div></a><a class="pagination-related" href="/2025/06/13/2025%20XYCTF%20Pwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 XYCTF Pwn-wp(含附件)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-13</div><div class="info-item-2">2025 XYCTF Pwn-wp(含附件)</div></div><div class="info-2"><div class="info-item-1">前言总体来说Pwn方向题目难度属于中等,属于那种一眼看不出要咋做,但多试试又能做出来的那种,比赛的时候甚至有几只队伍AK了Pwn方向。感觉题目还是很不错的尽管比赛中有一些小意外像是有些题目附件给错了，但是XYCTF的师傅们都是无偿出题纯热爱向大伙分享自己的题目和知识，感谢所有XYCTF出题的师傅，明年我还来打(〃&#39;▽&#39;〃) 通过网盘分享的文件：2025XYCTF.rar链接: https://pan.baidu.com/s/1yf7piV-H4U2qtXiQyo9eBw?pwd=xidp 提取码: xidp其中含有pwn方向全部赛题、官方wp、奶龙出题人提供的奶龙wp以及ddw队伍的师傅分享在群里的pwn方向全解wp Ret2libc’s...</div></div></div></a><a class="pagination-related" href="/2025/06/13/2025%20UCSCCTF%20Pwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 UCSCCTF Pwn-wp(含附件)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-13</div><div class="info-item-2">2025 UCSCCTF Pwn-wp(含附件)</div></div><div class="info-2"><div class="info-item-1">前言说实话有点失望, 比赛平台超级卡，而且比赛一开始平台就崩了，题目难度偏低(也是很遗憾，本来可以抢个血分的，但是太卡了靶机就是打不开)但是还是感谢比赛出题的师傅愿意分享自己的题目 通过网盘分享的文件：2025UCSCCTF.rar链接: https://pan.baidu.com/s/17yqcmGRXWN1oNMvgZNRv5w?pwd=xidp 提取码: xidp内含2025 UCSCCTF三个pwn题的附件 由于题目比较简单我就简单介绍我的思路并放上exp了 BoFido-Ucsc程序里开头有seed =...</div></div></div></a><a class="pagination-related" href="/2024/06/13/Pwndbg%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8/" title="Pwndbg基础使用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-13</div><div class="info-item-2">Pwndbg基础使用</div></div><div class="info-2"><div class="info-item-1">什么是pwndbg?它是gdb的一个插件，增加了许多功能，来帮助pwn手可以快速寻找到所需要的信息，除了pwndbg之外还有peda、gef等工具可以用来协助进行调试。 如何给pwndbg分屏?12vim ~/.gdbinitset context-output /dev/pts/2 # 这里修改成2，那么就会在第二个终端显示信息  pwndbg的基础操作:启动调试: 12gdb ./文件名比如:gdb ./pwn 如果我们已经成功安装了pwndbg，那么打开gdb之后会显示pwndbg&gt;这样的提示符号，否则是gdb&gt; 基础操作: 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576**************************************************pwndbg&gt; start #...</div></div></div></a><a class="pagination-related" href="/2024/06/13/pwntools%E5%BA%93%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" title="pwntools库的基本使用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-13</div><div class="info-item-2">pwntools库的基本使用</div></div><div class="info-2"><div class="info-item-1">啥是pwntools?Pwntools 是一个用于漏洞利用和二进制分析的 Python 库，广泛应用于安全研究、渗透测试和竞争性编程（如 CTF，Capture The Flag）中。它为用户提供了一套强大的工具和功能，以简化与二进制文件的交互、网络通信以及各种常见任务的执行。 简而言之，pwntools可以说是pwn手必备的工具，它帮助pwn手连接远程服务器，发送信息，接收信息，以及提供了很多工具来帮助pwn手快速攻克题目 如何安装pwntools?按照以下流程在python3中安装pwntools 1234&gt;&gt;&gt;git clone https://github.com/Gallopsled/pwntools.git&gt;&gt;&gt;sudo apt-get install python3 python3-pip python3-dev git libssl-dev libffi-dev build-essential&gt;&gt;&gt;python3 -m pip install --upgrade pip&gt;&gt;&gt;python3...</div></div></div></a><a class="pagination-related" href="/2024/06/13/ELF%20%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8C%E7%A8%8B%E5%BA%8F%E6%AE%B5%E8%A7%A3%E6%9E%90(%E7%AE%80%E7%89%88)/" title="ELF 文件格式和程序段解析(简版)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-13</div><div class="info-item-2">ELF 文件格式和程序段解析(简版)</div></div><div class="info-2"><div class="info-item-1">ELF (Executable and Linkable Format): 是一种用于 可执行文件、目标文件 和 库 的文件格式，类似于 Windows 下的 PE 文件格式。 ELF 主要包括三种类型的文件：  可重定位文件 (relocatable): 编译器和汇编器产生的 .o 文件，由 Linker 处理。 可执行文件 (executable): Linker 对 .o 文件进行处理后输出的文件，代表进程映像。 共享对象文件 (shared object): 动态库文件，通常是 .so 文件。  ELF 文件包含多个段，每个段承担不同的作用。以下是一些入门级 PWN 可能需要用到的段（仅介绍这些基本段）：  .text: 用于保存程序中的代码片段。 .data: 用于保存已经初始化的全局变量和局部变量。 .bss: 用于保存未初始化的全局变量和局部变量。 .plt: 用于链接和跳转到对应的 .got 表。 .got.plt: 存储对应函数的真实地址的表。 .rodata: 只读数据 .init: 程序初始化和终止的代码   ELF...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/Qhead.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">XiDP</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/XiDP0"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">So get away</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%88%E5%B8%A7%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.</span> <span class="toc-text">栈帧是什么?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">2.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/14/DIR-815%20%E6%A0%88%E6%BA%A2%E5%87%BA%E6%BC%8F%E6%B4%9E(CNVD-2013-11625)%E5%A4%8D%E7%8E%B0/" title="DIR-815 栈溢出漏洞(CNVD-2013-11625)复现">DIR-815 栈溢出漏洞(CNVD-2013-11625)复现</a><time datetime="2025-06-13T16:00:00.000Z" title="发表于 2025-06-14 00:00:00">2025-06-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20ISCC%20%E7%BB%83%E6%AD%A6%E8%B5%9BPwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 ISCC 练武赛Pwn-wp(含附件)">2025 ISCC 练武赛Pwn-wp(含附件)</a><time datetime="2025-06-12T16:00:00.000Z" title="发表于 2025-06-13 00:00:00">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20ISCC%20%E6%93%82%E5%8F%B0%E8%B5%9BPwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 ISCC 擂台赛Pwn-wp(含附件)">2025 ISCC 擂台赛Pwn-wp(含附件)</a><time datetime="2025-06-12T16:00:00.000Z" title="发表于 2025-06-13 00:00:00">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20XYCTF%20Pwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 XYCTF Pwn-wp(含附件)">2025 XYCTF Pwn-wp(含附件)</a><time datetime="2025-06-12T16:00:00.000Z" title="发表于 2025-06-13 00:00:00">2025-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/13/2025%20UCSCCTF%20Pwn-wp(%E5%90%AB%E9%99%84%E4%BB%B6)/" title="2025 UCSCCTF Pwn-wp(含附件)">2025 UCSCCTF Pwn-wp(含附件)</a><time datetime="2025-06-12T16:00:00.000Z" title="发表于 2025-06-13 00:00:00">2025-06-13</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/yu2.png);"><div id="footer-wrap"><div class="footer_custom_text">Let yourself go</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="(。・＿・。)ﾉ你好呀，希望博客里面的内容可以帮助到你" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
